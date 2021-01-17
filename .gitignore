@@ -1,5 +1,5 @@
 # nodemodule
-/nodemodules/
+nodemodules/
 
 # Log file
 *.log
