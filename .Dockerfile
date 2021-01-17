@@ -11,10 +11,10 @@ ENV FILESTORAGE $FILESTORAGE
 ENV PLAYBOOK $PLAYBOOK
 
 ENV PLAYBOOK /root/z
-RUN apk add --no-cache musl-dev python3-dev openssl-dev libffi-dev gcc
+RUN apk add --no-cache musl-dev python3-dev openssl-dev libffi-dev gcc py3-pip
 RUN pip3 install --upgrade pip
 RUN pip install cffi
-RUN pip install ansible
+RUN pip install ansible pywinrm
 RUN ansible --version
 
 RUN apk add --update nodejs npm
