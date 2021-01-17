@@ -17,7 +17,7 @@ Solution
 Database
 * PostgreSQL
 
-### Installing
+### Globally npm install 
 
 Install itmsg-automation globally
 
@@ -27,6 +27,10 @@ $ npm i itmsg_automation -g
 
 start itmsg_automation web server
 
+NPM URL
+```
+https://www.npmjs.com/package/itmsg_automation
+```
 
 ### Configuration
 
