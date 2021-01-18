@@ -27,10 +27,8 @@ $ npm i itmsg_automation -g
 
 start itmsg_automation web server
 
-NPM URL
-```
-https://www.npmjs.com/package/itmsg_automation
-```
+NPM URL : https://www.npmjs.com/package/itmsg_automation
+
 
 ### Configuration
 
