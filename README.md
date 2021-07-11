@@ -27,7 +27,7 @@ file path for playbooks.
 
 You can manage itmsg_automation api server with automation web. Check out this portal if you are interested.
 
-Automation Portal URL : [https://github.com/myungyun/itmsg_automation-web](https://github.com/myungyun/itmsg_automation-web)
+Automation Portal URL : [https://github.com/myungyun/automation-web](https://github.com/myungyun/itmsg_automation-web)
 
 ### Docker Container
 
