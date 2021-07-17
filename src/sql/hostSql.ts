@@ -1,5 +1,13 @@
 class query {
 
+  checkNameDuplicate(): string {
+    let stringQuery = "";
+    stringQuery += " select name ";
+    stringQuery += " from t_hosts ";
+    stringQuery += " where name ilike ? ";
+    return stringQuery
+  };
+
   post (vname:string, vdomain:string, vcontent:string, vos:string, vip:string, vuse_yn:string, vdatasource:string, vdatacenter:string):string {
     let stringQuery:string = "";
     stringQuery += " INSERT INTO t_hosts ( name,  domain,";

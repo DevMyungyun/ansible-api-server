@@ -1,4 +1,13 @@
 class query {
+
+  checkNameDuplicate(): string {
+    let stringQuery = "";
+    stringQuery += " select name ";
+    stringQuery += " from t_credentials ";
+    stringQuery += " where name ilike ? ";
+    return stringQuery
+  };
+
   post (vname: string, vcontent: string, vmid: number, encryptedPw: string, encryptePK: string, vtype: string): string {
     let stringQuery: string = "";
     stringQuery += " INSERT INTO t_credentials ( name, content, mid, mpw, private_key, type, create_id) ";
@@ -64,6 +73,6 @@ class query {
 
 }
 
-const credentialQurey = new query()
+const credentialSql = new query()
 
-module.exports = credentialQurey;
+export default credentialSql;

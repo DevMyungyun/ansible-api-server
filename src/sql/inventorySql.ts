@@ -1,4 +1,23 @@
 class query {
+
+  getInventoryListByHost(): string {
+    let stringQuery = "";
+    stringQuery += " select i.iid, i.name ";
+    stringQuery += " from t_inventory i, t_ivt_hst ih ";
+    stringQuery += " where i.iid = ih.iid ";
+    stringQuery += " and hid = ? ";
+    stringQuery += " ORDER BY iid ASC ";
+    return stringQuery
+  };
+
+  checkNameDuplicate(): string {
+    let stringQuery = "";
+    stringQuery += " select name ";
+    stringQuery += " from t_inventory ";
+    stringQuery += " where name ilike ? ";
+    return stringQuery
+  };
+
   post (vname: string, vcontent: string, vuse_yn: string): string {
     let stringQuery: string = "";
     stringQuery += " INSERT INTO t_inventory ( name, content, total_hosts, use_yn, create_id ) ";

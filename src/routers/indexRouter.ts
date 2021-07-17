@@ -5,5 +5,8 @@ const router = Router();
 const IndexController = new indexController();
 
 router.get('/', IndexController.get);
+router.get('/playbook', IndexController.getPlaybook);
+router.get('/commonCode', IndexController.getCommonCode);
+router.get('/analyze/playbook/recap', IndexController.analyzePlaybookRecap);
 
 export default router;
