@@ -1,5 +1,3 @@
-# nodemodule
 nodemodules/
-
-# Log file
 *.log
+jenkinsfile
