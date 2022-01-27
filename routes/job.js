@@ -20,10 +20,10 @@ router.post('/', (req, res, next) => {
 		}
 
 		if (rows.rowCount < 1) {
-			res.json(db.resultMsg('840', req.body));
+			res.json(db.resultMsg('403'[1], req.body));
 		} else {
 			delete req.body.mpw;
-			res.json(db.resultMsg('200', req.body));
+			res.json(db.resultMsg('200'[0], req.body));
 		}
 	});
 });
@@ -51,20 +51,20 @@ router.get('/o', (req, res, next) => {
 					return next(err);
 				}
 				if (rows.rows == "") {
-					res.json(db.resultMsg('602', rows.rows[0]));
+					res.json(db.resultMsg('500'[2], rows.rows[0]));
 				} else {
-					// console.log(db.resultMsg('200', rows.rows[0]));
-					res.json(db.resultMsg('200', rows.rows[0]));
+					// console.log(db.resultMsg('200'[0], rows.rows[0]));
+					res.json(db.resultMsg('200'[0], rows.rows[0]));
 				}
 			});
 
 		} else {
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Job ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 
 });
@@ -105,10 +105,10 @@ router.get('/', (req, res, next) => {
 			vdata['list'] = rows.rows;
 
 			if (vdata.list == "") {
-				res.json(db.resultMsg('602', rows.rows[0]));
+				res.json(db.resultMsg('500'[2], rows.rows[0]));
 			} else {
-				// console.log(db.resultMsg('200', vdata));
-				res.json(db.resultMsg('200', vdata));
+				// console.log(db.resultMsg('200'[0], vdata));
+				res.json(db.resultMsg('200'[0], vdata));
 			}
 		}).catch((err) => {
 			if (err) {

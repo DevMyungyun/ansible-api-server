@@ -15,21 +15,22 @@ const pool = new Pool({
 });
 
 const errorMsg = {
-	"200": "success",
-	"201": "success create",
-	"260": "fail create",
-	"300": "Status Cancel",
-	"301": "Status Complete",
-	"601": "Database Error",
-	"602": "Data not found in database",
-	"701": "Do not have user",
-	"702": "Password value is invalid",
-	"820": "Check a input data",
-	"840": "No data was applied.",
-	"860": "duplicate key value",
-	"870": "There is connected hosts",
-	"880": "Process kill",
-	"900": "Not supported"
+	"200": {
+		0: "success",
+		1: "success create",
+		2: "there is connected hosts",
+		3: "process kill",
+	},
+	"403": {
+		0: "check a input data",
+		1: "duplicate key value",	
+	},
+	"500": {
+		0: "fail create",
+		1: "database Error",
+		2: "data not found in database"
+	},
+	"900": "not supported"
 };
 
 class db {

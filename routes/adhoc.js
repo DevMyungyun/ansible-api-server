@@ -21,9 +21,6 @@ router.post('/', function (req, res, next) {
 	let vvariables = req.body.variables ? addslashes(req.body.variables) : "---";
 	let vuse_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "Y";
 
-	// console.log('#####req.body.variables : ##' + req.body.variables);
-	// console.log('#####addslashes(req.body.variables) : ##' + addslashes(req.body.variables));
-
 	let stringQuery = sql.post(vname, vcontent, viid, viname, vcname, vmodule, varg, vforks, vlimits, vverb, vvariables, vuse_yn)
 
 	db.iquery(stringQuery, [], (err, rows) => {
@@ -32,7 +29,7 @@ router.post('/', function (req, res, next) {
 		}
 
 		if (rows.rowCount < 1) {
-			res.json(db.resultMsg('840', req.body));
+			res.json(db.resultMsg('403'[1], req.body));
 		} else {
 			delete req.body.mpw;
 			res.json(db.resultMsg('200', req.body));
@@ -66,18 +63,18 @@ router.put('/', function (req, res, next) {
 				}
 
 				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('840', req.body));
+					res.json(db.resultMsg('403'[1], req.body));
 				} else {
 					res.json(db.resultMsg('200', req.body));
 				}
 			});
 		} else {
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Job template ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 
 });
@@ -96,7 +93,7 @@ router.delete('/', function (req, res, next) {
 				}
 
 				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('840', req.body));
+					res.json(db.resultMsg('403'[1], req.body));
 				} else {
 					res.json(db.resultMsg('200', req.body));
 				}
@@ -104,11 +101,11 @@ router.delete('/', function (req, res, next) {
 
 		} else {
 			console.log("Type error! Please input String type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("ADHOC ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 
 });
@@ -126,18 +123,18 @@ router.get('/o', (req, res, next) => {
 					return next(err);
 				}
 				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('602', rows.rows[0]));
+					res.json(db.resultMsg('500'[2], rows.rows[0]));
 				} else {
 					res.json(db.resultMsg('200', rows.rows[0]));
 				}
 			});
 		} else {
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Job template ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 
 });
@@ -172,7 +169,7 @@ router.get('/', function (req, res, next) {
 			vdata['list'] = rows.rows;
 
 			if (vdata.rowCount < 1) {
-				res.json(db.resultMsg('602', rows.rows));
+				res.json(db.resultMsg('500'[2], rows.rows));
 			} else {
 				// console.log(db.resultMsg('200', vdata));
 				res.json(db.resultMsg('200', vdata));

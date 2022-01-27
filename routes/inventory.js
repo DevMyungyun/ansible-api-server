@@ -17,13 +17,13 @@ router.post('/', (req, res, next) => {
 	db.iquery(stringQuery, [], (err, rows) => {
 		if (err) {
 			if (err.code === '23505') {
-				res.json(db.resultMsg('860', req.body));
+				res.json(db.resultMsg('403'[1], req.body));
 			} else {
 				return next(err);
 			}
 		} else {
 			if (rows.rowCount < 1) {
-				res.json(db.resultMsg('840', req.body));
+				res.json(db.resultMsg('403'[1], req.body));
 			} else {
 				console.log('200: successfully insert datas');
 				// res.json(db.resultMsg('200', req.body));
@@ -67,13 +67,13 @@ router.put('/', (req, res, next) => {
 			db.iquery(stringQuery, [], (err, rows) => {
 				if (err) {
 					if (err.code === '23505') {
-						res.json(db.resultMsg('860', req.body));
+						res.json(db.resultMsg('403'[1], req.body));
 					} else {
 						return next(err);
 					}
 				} else {
 					if (rows.rowCount < 1) {
-						res.json(db.resultMsg('840', req.body));
+						res.json(db.resultMsg('403'[1], req.body));
 					} else {
 						res.json(db.resultMsg('200', req.body));
 
@@ -91,11 +91,11 @@ router.put('/', (req, res, next) => {
 			});
 		} else {
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Inventory ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 
 });
@@ -125,7 +125,7 @@ function deleteIvt(req, res, viid, chkIid) {
 					return next(err);
 				}
 				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('840', req.body));
+					res.json(db.resultMsg('403'[1], req.body));
 				} else {
 					console.log('>>> Success to delete inventory');
 				}
@@ -133,7 +133,7 @@ function deleteIvt(req, res, viid, chkIid) {
 			});
 		} else {
 			console.log("Type error! Please input Array type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 
 		// Can't delete inventory when there is connected
@@ -149,7 +149,7 @@ function deleteIvt(req, res, viid, chkIid) {
 		//     					return next(err);
 		//     				}
 		//     				if (rows.rowCount < 1) {
-		//     					res.json(db.resultMsg('840', req.body));
+		//     					res.json(db.resultMsg('403'[1], req.body));
 		//     				} else {
 		//     					console.log('>>> Success to delete inventory');
 		//     				}
@@ -157,11 +157,11 @@ function deleteIvt(req, res, viid, chkIid) {
 		//     			});
 		//     		} else {
 		//     			console.log("Type error! Please input Number type ID!!");
-		//     			res.json(db.resultMsg('820', req.body));
+		//     			res.json(db.resultMsg('403'[0], req.body));
 		//     		}
 		//     	} else {
 		//     		console.log("Inventory ID does not exist!!");
-		//     		res.json(db.resultMsg('820', req.body));
+		//     		res.json(db.resultMsg('403'[0], req.body));
 		//     	}
 		//     } else if(hostCount > 0) {
 		//         chkIid.push(item);
@@ -177,7 +177,7 @@ function chkValidDelete(req, res, chkIid) {
 
 	return new Promise((resolve, reject) => {
 		if (chkIid.length > 0) {
-			res.json(db.resultMsg('870', req.body));
+			res.json(db.resultMsg('200'[2], req.body));
 		} else {
 			res.json(db.resultMsg('200', req.body));
 		}
@@ -197,7 +197,7 @@ router.get('/o', (req, res, next) => {
 					return next(err);
 				}
 				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('602', rows.rows[0]))
+					res.json(db.resultMsg('500'[2], rows.rows[0]))
 				} else {
 					// console.log(db.resultMsg('200', rows.rows[0]));
 					res.json(db.resultMsg('200', rows.rows[0]))
@@ -205,11 +205,11 @@ router.get('/o', (req, res, next) => {
 			});
 		} else {
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Inventory ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 
 });
@@ -234,7 +234,7 @@ router.get('/detailCHstList', (req, res, next) => {
 					vdata['list'] = rows.rows;
 
 					if (vdata.rowCount < 1) {
-						res.json(db.resultMsg('602', rows.rows[0]));
+						res.json(db.resultMsg('500'[2], rows.rows[0]));
 					} else {
 						// console.log(db.resultMsg('200', vdata));
 						res.json(db.resultMsg('200', vdata));
@@ -247,11 +247,11 @@ router.get('/detailCHstList', (req, res, next) => {
 			});
 		} else {
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Inventory ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 
 });
@@ -288,7 +288,7 @@ router.get('/', (req, res, next) => {
 			vdata['list'] = rows.rows;
 
 			if (vdata.rowCount < 1) {
-				res.json(db.resultMsg('602', rows.rows[0]));
+				res.json(db.resultMsg('500'[2], rows.rows[0]));
 			} else {
 				// console.log(db.resultMsg('200', vdata));
 				res.json(db.resultMsg('200', vdata));
@@ -322,7 +322,7 @@ router.get('/joinIid', (req, res, next) => {
 					vdata['list'] = rows.rows;
 
 					if (vdata.rowCount < 1) {
-						res.json(db.resultMsg('602', rows.rows[0]));
+						res.json(db.resultMsg('500'[2], rows.rows[0]));
 					} else {
 						// console.log(db.resultMsg('200', vdata));
 						res.json(db.resultMsg('200', vdata));
@@ -335,11 +335,11 @@ router.get('/joinIid', (req, res, next) => {
 			});
 		} else {
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Inventory ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 });
 
@@ -364,7 +364,7 @@ router.get('/connectedHosts', (req, res, next) => {
 					vdata['list'] = rows.rows;
 
 					if (vdata.rowCount < 1) {
-						res.json(db.resultMsg('602', rows.rows[0]));
+						res.json(db.resultMsg('500'[2], rows.rows[0]));
 					} else {
 						// console.log(db.resultMsg('200', vdata));
 						res.json(db.resultMsg('200', vdata));
@@ -377,11 +377,11 @@ router.get('/connectedHosts', (req, res, next) => {
 			});
 		} else {
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Inventory ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 });
 
@@ -425,8 +425,8 @@ function getIidSeq() {
 				return reject(err);
 			}
 			if (rows.rowCount < 1) {
-				console.log('602 : Get iid Sequence err');
-				// res.json(db.resultMsg('602', rows.rows));
+				console.log('500 [2]: Get iid Sequence err');
+				// res.json(db.resultMsg('500'[2], rows.rows));
 			} else {
 				resolve(rows.rows[0].nextval);
 				console.log('200 : Get iid Sequence success');
@@ -449,12 +449,12 @@ function insertInvHst(viid, vhid, req, res) {
 					if (err) {
 						// console.log(err);
 						return reject(err);
-						// res.json(db.resultMsg('860', req.body));
+						// res.json(db.resultMsg('403'[1], req.body));
 					} else {
 						if (rows.rowCount < 1) {
-							console.log('840 : Insert into Inventory-Host join table err');
+							console.log('403 [1]: Insert into Inventory-Host join table err');
 							resolve(rows.rows[0]);
-							// res.json(db.resultMsg('840', req.body));
+							// res.json(db.resultMsg('403'[1], req.body));
 						} else {
 							console.log('200 : Insert ino Inventory-Host join table success');
 							resolve(rows.rows[0]);
@@ -464,11 +464,11 @@ function insertInvHst(viid, vhid, req, res) {
 				});
 			} else {
 				console.log("Type error! Please input Integer type ID!!");
-				res.json(db.resultMsg('820', req.body));
+				res.json(db.resultMsg('403'[0], req.body));
 			}
 		} else {
 			console.log("Inventory-host ID does not exist!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	});
 }
@@ -492,11 +492,11 @@ function delInvHst(viid) {
 
 			} else {
 				console.log("Type error! Please input Integer type ID!!");
-				res.json(db.resultMsg('820', req.body));
+				res.json(db.resultMsg('403'[0], req.body));
 			}
 		} else {
 			console.log("Inventory-Host ID does not exist!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	});
 }

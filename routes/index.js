@@ -35,7 +35,7 @@ router.get('/playbook', (req, res, next) => {
         }
       });
       // console.log(pbArray);
-      res.json(playbookRes('200', pbArray.length, pbArray));
+      res.json(playbookRes('200'[0], pbArray.length, pbArray));
     }
   });
 });
@@ -65,7 +65,7 @@ router.get('/commonCode', (req, res, next) => {
           return next(err);
         }
         if (rows.rowCount < 1) {
-          res.json(db.resultMsg('602', rows.rows));
+          res.json(db.resultMsg('500'[2], rows.rows));
         } else {
           let vcodeArr = []
           rows.rows.forEach((result) => {
@@ -74,16 +74,16 @@ router.get('/commonCode', (req, res, next) => {
             }
           });
 
-          res.json(db.resultMsg('200', vcodeArr));
+          res.json(db.resultMsg('200'[0], vcodeArr));
         }
       });
     } else {
       console.log("Type error! Please input String type ID!!");
-      res.json(db.resultMsg('820', req.body));
+      res.json(db.resultMsg('403'[0], req.body));
     }
   } else {
     console.log("Job template ID does not exist!!");
-    res.json(db.resultMsg('820', req.body));
+    res.json(db.resultMsg('403'[0], req.body));
   }
 
 });
@@ -101,20 +101,20 @@ router.get('/getJoinIvt', (req, res, next) => {
           return next(err);
         }
         if (rows.rowCount < 1) {
-          res.json(db.resultMsg('602', rows.rows));
+          res.json(db.resultMsg('500'[2], rows.rows));
         } else {
-          // console.log(db.resultMsg('200', rows.rows[0]));
-          res.json(db.resultMsg('200', rows.rows));
+          // console.log(db.resultMsg('200'[0], rows.rows[0]));
+          res.json(db.resultMsg('200'[0], rows.rows));
         }
       });
 
     } else {
       console.log("Type error! Please input Integer type ID!!");
-      res.json(db.resultMsg('820', req.body));
+      res.json(db.resultMsg('403'[0], req.body));
     }
   } else {
     console.log("Host ID does not exist!!");
-    res.json(db.resultMsg('820', req.body));
+    res.json(db.resultMsg('403'[0], req.body));
   }
 
 });
@@ -131,20 +131,20 @@ router.get('/chkIvnDupl', (req, res, next) => {
           return next(err);
         }
         if (rows.rowCount < 1) {
-          res.json(db.resultMsg('602', rows.rows));
+          res.json(db.resultMsg('500'[2], rows.rows));
         } else {
-          // console.log(db.resultMsg('200', rows.rows[0]));
-          res.json(db.resultMsg('200', rows.rows));
+          // console.log(db.resultMsg('200'[0], rows.rows[0]));
+          res.json(db.resultMsg('200'[0], rows.rows));
         }
       });
 
     } else {
       console.log("Type error! Please input String type name!!");
-      res.json(db.resultMsg('820', req.body));
+      res.json(db.resultMsg('403'[0], req.body));
     }
   } else {
     console.log("Inventory name does not exist!!");
-    res.json(db.resultMsg('820', req.body));
+    res.json(db.resultMsg('403'[0], req.body));
   }
 
 });
@@ -160,20 +160,20 @@ router.get('/chkHstDupl', (req, res, next) => {
           return next(err);
         }
         if (rows.rowCount < 1) {
-          res.json(db.resultMsg('602', rows.rows));
+          res.json(db.resultMsg('500'[2], rows.rows));
         } else {
-          // console.log(db.resultMsg('200', rows.rows[0]));
-          res.json(db.resultMsg('200', rows.rows));
+          // console.log(db.resultMsg('200'[0], rows.rows[0]));
+          res.json(db.resultMsg('200'[0], rows.rows));
         }
       });
 
     } else {
       console.log("Type error! Please input String type name!!");
-      res.json(db.resultMsg('820', req.body));
+      res.json(db.resultMsg('403'[0], req.body));
     }
   } else {
     console.log("Inventory name does not exist!!");
-    res.json(db.resultMsg('820', req.body));
+    res.json(db.resultMsg('403'[0], req.body));
   }
 
 });
@@ -190,20 +190,20 @@ router.get('/chkCredDupl', (req, res, next) => {
           return next(err);
         }
         if (rows.rowCount < 1) {
-          res.json(db.resultMsg('602', rows.rows));
+          res.json(db.resultMsg('500'[2], rows.rows));
         } else {
-          // console.log(db.resultMsg('200', rows.rows[0]));
-          res.json(db.resultMsg('200', rows.rows));
+          // console.log(db.resultMsg('200'[0], rows.rows[0]));
+          res.json(db.resultMsg('200'[0], rows.rows));
         }
       });
 
     } else {
       console.log("Type error! Please input String type name!!");
-      res.json(db.resultMsg('820', req.body));
+      res.json(db.resultMsg('403'[0], req.body));
     }
   } else {
     console.log("Credential name does not exist!!");
-    res.json(db.resultMsg('820', req.body));
+    res.json(db.resultMsg('403'[0], req.body));
   }
 
 });
@@ -220,9 +220,9 @@ router.get('/analyzedResult', (req, res, next) => {
           return next(err);
         }
         if (rows.rows == "") {
-          res.json(db.resultMsg('602', rows.rows));
+          res.json(db.resultMsg('500'[2], rows.rows));
         } else {
-          // console.log(db.resultMsg('200', rows.rows[0]));
+          // console.log(db.resultMsg('200'[0], rows.rows[0]));
           let pbResult = '';
           let resResult = '';
           rows.rows.forEach((item) => {
@@ -306,23 +306,23 @@ router.get('/analyzedResult', (req, res, next) => {
             resResult += 'The number of unreachabled hosts : ' + unReacherableCountArr.length + '\\n';
             // console.log(resResult);
 
-            res.json(db.resultMsg('200', resResult));
+            res.json(db.resultMsg('200'[0], resResult));
 
           } else {
             let resResult = '';
             resResult += 'Some error occured while PlayBook is executed\\nCheck Host or variables again...';
-            res.json(db.resultMsg('200', resResult));
+            res.json(db.resultMsg('200'[0], resResult));
           }
 
         }
       });
     } else {
       console.log("Type error! Please input Integer type ID!!");
-      res.json(db.resultMsg('820', req.body));
+      res.json(db.resultMsg('403'[0], req.body));
     }
   } else {
     console.log("Job Event ID does not exist!!");
-    res.json(db.resultMsg('820', req.body));
+    res.json(db.resultMsg('403'[0], req.body));
   }
 
 });
@@ -336,9 +336,9 @@ router.get('/terminateJob', (req, res, next) => {
     console.log('### Kill Process stderr : ' + stderr);
     if (err != null) {
       console.log('### Kill Process error : ' + err);
-      res.json(db.resultMsg('880', stderr));
+      res.json(db.resultMsg('200'[3], stderr));
     } else if (stdout != null) {
-      res.json(db.resultMsg('200', stdout));
+      res.json(db.resultMsg('200'[0], stdout));
     }
 
   });
@@ -377,7 +377,7 @@ router.get('/terminateOneJob', (req, res, next) => {
         });
       }
 
-      res.json(db.resultMsg('880', stderr));
+      res.json(db.resultMsg('200'[3], stderr));
     });
 
   }).catch((err) => {
@@ -422,14 +422,14 @@ function killProcess(vpid) {
           if (killErr != null) {
             console.log('### Kill Process error : ' + killErr);
             return reject(killErr);
-            // res.json(db.resultMsg('880', killStdout));
+            // res.json(db.resultMsg('200'[3], killStdout));
           }
         });
 
         if (err != null) {
           console.log('### Kill Process error : ' + err);
 
-          //res.json(db.resultMsg('880', stderr));
+          //res.json(db.resultMsg('200'[3], stderr));
         }
       });
     }

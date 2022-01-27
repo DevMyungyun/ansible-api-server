@@ -19,21 +19,21 @@ router.post('/istMultiIid', (req, res, next) => {
 		db.iquery(stringQuery, [], (err, rows) => {
 			if (err) {
 				//console.log('### Inventory-Host join table insert error : '+err);
-				res.json(db.resultMsg('601', err));
+				res.json(db.resultMsg('500'[1], err));
 			} else {
 				if (rows.rowCount < 1) {
-					console.log('840 : Insert into Inventory-Host join table err');
-					res.json(db.resultMsg('840', req.body));
+					console.log('403[1]: Insert into Inventory-Host join table err');
+					res.json(db.resultMsg('403'[1], req.body));
 				} else {
-					console.log('200 : Insert ino Inventory-Host join table success');
-					res.json(db.resultMsg('200', req.body));
+					console.log('200: Insert ino Inventory-Host join table success');
+					res.json(db.resultMsg('200'[0], req.body));
 				}
 			}
 		});
 
 	} else {
 		console.log("Inventory-host ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 });
 
@@ -51,21 +51,21 @@ router.post('/istMultiHid', (req, res, next) => {
 		db.iquery(stringQuery, [], (err, rows) => {
 			if (err) {
 				//console.log('### Inventory-Host join table insert error : '+err);
-				res.json(db.resultMsg('601', err));
+				res.json(db.resultMsg('500'[1], err));
 			} else {
 				if (rows.rowCount < 1) {
-					console.log('840 : Insert into Inventory-Host join table err');
-					res.json(db.resultMsg('840', req.body));
+					console.log('403: Insert into Inventory-Host join table err');
+					res.json(db.resultMsg('403'[1], req.body));
 				} else {
-					console.log('200 : Insert ino Inventory-Host join table success');
-					res.json(db.resultMsg('200', req.body));
+					console.log('200: Insert ino Inventory-Host join table success');
+					res.json(db.resultMsg('200'[0], req.body));
 				}
 			}
 		});
 
 	} else {
 		console.log("Inventory-host ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 });
 
@@ -90,15 +90,15 @@ router.delete('/', (req, res, next) => {
 				}
 
 				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('840', req.body));
+					res.json(db.resultMsg('403'[1], req.body));
 				} else {
-					res.json(db.resultMsg('200', req.body));
+					res.json(db.resultMsg('200'[0], req.body));
 				}
 			});
 
 		} else {
 			console.log("Type error! Please input String type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else if (viid) {
 		if (typeof viid == 'string') {
@@ -110,19 +110,19 @@ router.delete('/', (req, res, next) => {
 				}
 
 				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('840', req.body));
+					res.json(db.resultMsg('403'[1], req.body));
 				} else {
-					res.json(db.resultMsg('200', req.body));
+					res.json(db.resultMsg('200'[0], req.body));
 				}
 			});
 
 		} else {
 			console.log("Type error! Please input String type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Inventory-Host ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 
 });
@@ -141,19 +141,19 @@ router.get('/o', (req, res, next) => {
 					return next(err);
 				}
 				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('602', rows.rows));
+					res.json(db.resultMsg('500'[2], rows.rows));
 				} else {
-					// console.log(db.resultMsg('200', rows.rows));
-					res.json(db.resultMsg('200', rows.rows));
+					// console.log(db.resultMsg('200'[0], rows.rows));
+					res.json(db.resultMsg('200'[0], rows.rows));
 				}
 			});
 		} else {
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Inventory-Host ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 
 });
@@ -187,10 +187,10 @@ router.get('/', (req, res, next) => {
 			vdata['list'] = rows.rows;
 
 			if (vdata.rowCount < 1) {
-				res.json(db.resultMsg('602', rows.rows));
+				res.json(db.resultMsg('500'[2], rows.rows));
 			} else {
-				// console.log(db.resultMsg('200', vdata));
-				res.json(db.resultMsg('200', vdata));
+				// console.log(db.resultMsg('200'[0], vdata));
+				res.json(db.resultMsg('200'[0], vdata));
 			}
 		}).catch((err) => {
 			if (err) {

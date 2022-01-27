@@ -86,7 +86,7 @@ router.post('/', (req, res, next) => {
             insertJob(resultJT).then((result) => {
               vjid = result;
               vjdata['jid'] = vjid;
-              //res.json(db.resultMsg('200', vjdata));
+              //res.json(db.resultMsg('200'[0], vjdata));
             });
 
             let args = ['-i', inventoryUrl, '-e', '@' + envUrl, vforksCli, vverb, playbookUrl];
@@ -117,7 +117,7 @@ router.post('/', (req, res, next) => {
               updateJobevent(code, vjid);
               // DELETE Directory
               rmDir(vdic);
-              res.json(db.resultMsg('200', vjdata));
+              res.json(db.resultMsg('200'[0], vjdata));
             });
           }).catch((err) => {
             if (err) {
@@ -131,10 +131,10 @@ router.post('/', (req, res, next) => {
         });
       } else if (resultJT.use_yn == 'N') {
         console.log('### This Playbook Template does not allow to use');
-        res.json(db.resultMsg('260', req.body));
+        res.json(db.resultMsg('500'[0], req.body));
       } else {
         console.log('Job Template ID does not exist in database');
-        res.json(db.resultMsg('602', req.body));
+        res.json(db.resultMsg('500'[2], req.body));
       }
       // console.log(resultJT);
       // console.log(resultJT.cname);
@@ -213,7 +213,7 @@ router.post('/', (req, res, next) => {
             insertJob(resultAHT).then((result) => {
               vjid = result;
               vjdata['jid'] = vjid;
-              //res.json(db.resultMsg('200', vjdata));
+              //res.json(db.resultMsg('200'[0], vjdata));
             });
 
             const args = ['hosts', '-i', inventoryUrl, '-e', '@' + envUrl, vforksCli, vverb, '-m', vmodule];
@@ -258,7 +258,7 @@ router.post('/', (req, res, next) => {
               updateJobevent(code, vjid);
               // DELETE Directory
               rmDir(vdic);
-              res.json(db.resultMsg('200', vjdata));
+              res.json(db.resultMsg('200'[0], vjdata));
             });
           }).catch((err) => {
             if (err) {
@@ -272,10 +272,10 @@ router.post('/', (req, res, next) => {
         });
       } else if (resultAHT.use_yn == 'N') {
         console.log('### This Ad-Hoc Template does not allow to use');
-        res.json(db.resultMsg('260', req.body));
+        res.json(db.resultMsg('500'[0], req.body));
       } else {
         console.log('ADHOC Template ID does not exist in database');
-        res.json(db.resultMsg('602', req.body));
+        res.json(db.resultMsg('500'[2], req.body));
       }
     }).catch((err) => {
       if (err) {
@@ -308,19 +308,19 @@ router.get('/o', (req, res, next) => {
           return next(err);
         }
         if (rows.rows == "") {
-          res.json(db.resultMsg('602', rows.rows));
+          res.json(db.resultMsg('500'[2], rows.rows));
         } else {
-          // console.log(db.resultMsg('200', rows.rows[0]));
-          res.json(db.resultMsg('200', rows.rows));
+          // console.log(db.resultMsg('200'[0], rows.rows[0]));
+          res.json(db.resultMsg('200'[0], rows.rows));
         }
       });
     } else {
       console.log("Type error! Please input Integer type ID!!");
-      res.json(db.resultMsg('820', req.body));
+      res.json(db.resultMsg('403'[0], req.body));
     }
   } else {
     console.log("Job Event ID does not exist!!");
-    res.json(db.resultMsg('820', req.body));
+    res.json(db.resultMsg('403'[0], req.body));
   }
 
 });
@@ -354,10 +354,10 @@ router.get('/', (req, res, next) => {
       vdata['list'] = rows.rows;
 
       if (vdata.rowCount < 1) {
-        res.json(db.resultMsg('602', rows.rows));
+        res.json(db.resultMsg('500'[2], rows.rows));
       } else {
-        // console.log(db.resultMsg('200', vdata));
-        res.json(db.resultMsg('200', vdata));
+        // console.log(db.resultMsg('200'[0], vdata));
+        res.json(db.resultMsg('200'[0], vdata));
       }
     }).catch((err) => {
       if (err) {

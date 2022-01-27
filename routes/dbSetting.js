@@ -19,12 +19,12 @@ router.get('/deleteDB', (req, res, next) => {
     db.iquery(stringQuery + item, [], (err, rows) => {
       if (err) {
         return next(err);
-        res.json(db.resultMsg('260', req.body));
+        res.json(db.resultMsg('500'[0], req.body));
       }
       console.log('>>> Success to delete ' + item + ' table ');
     });
   });
-  res.json(db.resultMsg('201', req.body));
+  res.json(db.resultMsg('200'[1], req.body));
 });
 
 
@@ -62,39 +62,39 @@ router.get('/createTable', (req, res, next) => {
                           console.log('>>> Success to create Trigger');
                         } else {
                           console.log('>>> Fail to create Trigger');
-                          res.json(db.resultMsg('260', req.body));
+                          res.json(db.resultMsg('500'[0], req.body));
                         }
                       });
                     } else {
                       console.log('>>> Fail to create Trigger Function');
-                      res.json(db.resultMsg('260', req.body));
+                      res.json(db.resultMsg('500'[0], req.body));
                     }
                   });
                 } else {
                   console.log('>>> Fail to create Inventory-Host join table');
-                  res.json(db.resultMsg('260', req.body));
+                  res.json(db.resultMsg('500'[0], req.body));
                 }
               });
 
               // } else {
               //     console.log('>>> Fail to create Host index');
-              //     res.json(db.resultMsg('260', req.body));
+              //     res.json(db.resultMsg('500'[0], req.body));
               // }
               // });
             } else {
               console.log('>>> Fail to create Host table');
-              res.json(db.resultMsg('260', req.body));
+              res.json(db.resultMsg('500'[0], req.body));
             }
           });
 
         } else {
           console.log('>>> Fail to create Inventory index');
-          res.json(db.resultMsg('260', req.body));
+          res.json(db.resultMsg('500'[0], req.body));
         }
       });
     } else {
       console.log('>>> Fail to create Inventory table');
-      res.json(db.resultMsg('260', req.body));
+      res.json(db.resultMsg('500'[0], req.body));
     }
   });
 
@@ -104,7 +104,7 @@ router.get('/createTable', (req, res, next) => {
       console.log('>>> Success to create Template table');
     } else {
       console.log('>>> Fail to create Template table');
-      res.json(db.resultMsg('260', req.body));
+      res.json(db.resultMsg('500'[0], req.body));
     }
   });
 
@@ -113,7 +113,7 @@ router.get('/createTable', (req, res, next) => {
       console.log('>>> Success to create Job table');
     } else {
       console.log('>>> Fail to create Job table');
-      res.json(db.resultMsg('260', req.body));
+      res.json(db.resultMsg('500'[0], req.body));
     }
   });
 
@@ -122,7 +122,7 @@ router.get('/createTable', (req, res, next) => {
       console.log('>>> Success to create Job Event table');
     } else {
       console.log('>>> Fail to create Job Event table');
-      res.json(db.resultMsg('260', req.body));
+      res.json(db.resultMsg('500'[0], req.body));
     }
   });
 
@@ -131,7 +131,7 @@ router.get('/createTable', (req, res, next) => {
       console.log('>>> Success to create Credential table');
     } else {
       console.log('>>> Fail to create Credential table');
-      res.json(db.resultMsg('260', req.body));
+      res.json(db.resultMsg('500'[0], req.body));
     }
   });
 
@@ -159,7 +159,7 @@ router.get('/createTable', (req, res, next) => {
     }
   });
 
-  res.json(db.resultMsg('201', req.body));
+  res.json(db.resultMsg('200'[1], req.body));
 });
 
 // Create Inventory table
@@ -172,7 +172,7 @@ function createIvtTable() {
         return reject(err);
       }
       resolve(rows);
-      // res.json(db.resultMsg('200', rows.rows));
+      // res.json(db.resultMsg('200'[0], rows.rows));
     });
   });
 }

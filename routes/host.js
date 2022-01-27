@@ -24,16 +24,16 @@ router.post('/', (req, res, next) => {
 	db.iquery(stringQuery, [], (err, rows) => {
 		if (err) {
 			if (err.code === '23505') {
-				res.json(db.resultMsg('860', req.body));
+				res.json(db.resultMsg('403'[1], req.body));
 			} else {
 				return next(err);
 			}
 		} else {
 			if (rows.rowCount < 1) {
-				res.json(db.resultMsg('840', req.body));
+				res.json(db.resultMsg('403'[1], req.body));
 			} else {
 				console.log('### Successfully insert datas');
-				res.json(db.resultMsg('200', req.body));
+				res.json(db.resultMsg('200'[0], req.body));
 
 				// When you want to set Inventory at the same time..
 				// getHidSeq().then( (result) => {
@@ -47,7 +47,7 @@ router.post('/', (req, res, next) => {
 				//                 console.log('### After INSERT : '+istResult);
 				//             });
 				//         }
-				//         res.json(db.resultMsg('200', req.body));
+				//         res.json(db.resultMsg('200'[0], req.body));
 				//     });
 				// });
 			}
@@ -79,28 +79,28 @@ router.put('/', (req, res, next) => {
 			db.iquery(stringQuery, [], (err, rows) => {
 				if (err) {
 					if (err.code === '23505') {
-						res.json(db.resultMsg('860', req.body));
+						res.json(db.resultMsg('403'[1], req.body));
 					} else {
 						return next(err);
 					}
 				} else {
 					if (rows.rowCount < 1) {
-						res.json(db.resultMsg('840', req.body));
+						res.json(db.resultMsg('403'[1], req.body));
 					} else {
-						res.json(db.resultMsg('200', req.body));
+						res.json(db.resultMsg('200'[0], req.body));
 					}
 				}
 			});
 
 		} else {
-			// console.log(db.resultMsg('602', req.body));
+			// console.log(db.resultMsg('500'[2], req.body));
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
-		// console.log(db.resultMsg('602', req.body));
+		// console.log(db.resultMsg('500'[2], req.body));
 		console.log("Host ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 });
 
@@ -118,9 +118,9 @@ router.delete('/', (req, res, next) => {
 				}
 
 				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('840', req.body));
+					res.json(db.resultMsg('403'[1], req.body));
 				} else {
-					res.json(db.resultMsg('200', req.body));
+					res.json(db.resultMsg('200'[0], req.body));
 
 					delInvHost(vseq).then((delResult) => {
 						console.log('### Successfully delete Inventory-Host join row : ' + delResult);
@@ -133,11 +133,11 @@ router.delete('/', (req, res, next) => {
 			});
 		} else {
 			console.log("Type error! Please input String type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Host ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 });
 
@@ -154,19 +154,19 @@ router.get('/o', (req, res, next) => {
 					return next(err);
 				}
 				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('602', rows.rows[0]));
+					res.json(db.resultMsg('500'[2], rows.rows[0]));
 				} else {
-					// console.log(db.resultMsg('200', rows.rows));
-					res.json(db.resultMsg('200', rows.rows[0]));
+					// console.log(db.resultMsg('200'[0], rows.rows));
+					res.json(db.resultMsg('200'[0], rows.rows[0]));
 				}
 			});
 		} else {
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Host ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 });
 
@@ -200,10 +200,10 @@ router.get('/', (req, res, next) => {
 			vdata['list'] = rows.rows;
 
 			if (vdata.rowCount < 1) {
-				res.json(db.resultMsg('602', rows.rows));
+				res.json(db.resultMsg('500'[2], rows.rows));
 			} else {
-				// console.log(db.resultMsg('200', vdata));
-				res.json(db.resultMsg('200', vdata));
+				// console.log(db.resultMsg('200'[0], vdata));
+				res.json(db.resultMsg('200'[0], vdata));
 			}
 		}).catch((err) => {
 			if (err) {
@@ -235,10 +235,10 @@ router.get('/connectedIvts', (req, res, next) => {
 					vdata['list'] = rows.rows;
 
 					if (vdata.rowCount < 1) {
-						res.json(db.resultMsg('602', rows.rows[0]));
+						res.json(db.resultMsg('500'[2], rows.rows[0]));
 					} else {
-						// console.log(db.resultMsg('200', vdata));
-						res.json(db.resultMsg('200', vdata));
+						// console.log(db.resultMsg('200'[0], vdata));
+						res.json(db.resultMsg('200'[0], vdata));
 					}
 				}).catch((err) => {
 					if (err) {
@@ -248,11 +248,11 @@ router.get('/connectedIvts', (req, res, next) => {
 			});
 		} else {
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Inventory ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 });
 
@@ -277,10 +277,10 @@ router.get('/joinHid', (req, res, next) => {
 					vdata['list'] = rows.rows;
 
 					if (vdata.rowCount < 1) {
-						res.json(db.resultMsg('602', rows.rows[0]));
+						res.json(db.resultMsg('500'[2], rows.rows[0]));
 					} else {
-						// console.log(db.resultMsg('200', vdata));
-						res.json(db.resultMsg('200', vdata));
+						// console.log(db.resultMsg('200'[0], vdata));
+						res.json(db.resultMsg('200'[0], vdata));
 					}
 				}).catch((err) => {
 					if (err) {
@@ -290,11 +290,11 @@ router.get('/joinHid', (req, res, next) => {
 			});
 		} else {
 			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	} else {
 		console.log("Inventory ID does not exist!!");
-		res.json(db.resultMsg('820', req.body));
+		res.json(db.resultMsg('403'[0], req.body));
 	}
 });
 
@@ -325,12 +325,12 @@ function getHidSeq() {
 				return reject(err);
 			}
 			if (rows.rowCount < 1) {
-				console.log('602 : Get hid Sequence err');
-				// res.json(db.resultMsg('602', rows.rows));
+				console.log('500 [2]: Get hid Sequence err');
+				// res.json(db.resultMsg('500'[2], rows.rows));
 			} else {
 				resolve(rows.rows[0].nextval);
-				console.log('200 : Get hid Sequence success');
-				// res.json(db.resultMsg('200', rows.rows));
+				console.log('200 [0]: Get hid Sequence success');
+				// res.json(db.resultMsg('200'[0], rows.rows));
 			}
 		});
 	});
@@ -345,26 +345,26 @@ function insertHostInv(viid, vhid) {
 				db.iquery(stringQuery, [], (err, rows) => {
 					if (err) {
 						return reject(err);
-						// res.json(db.resultMsg('860', req.body));
+						// res.json(db.resultMsg('403'[1], req.body));
 					} else {
 						if (rows.rowCount < 1) {
-							console.log('840 : Insert into Inventory-Host join table err');
+							console.log('403: Insert into Inventory-Host join table err');
 							resolve(rows.rows[0]);
-							// res.json(db.resultMsg('840', req.body));
+							// res.json(db.resultMsg('403'[1], req.body));
 						} else {
-							console.log('200 : Insert ino Inventory-Host join table success');
+							console.log('200: Insert ino Inventory-Host join table success');
 							resolve(rows.rows[0]);
-							// res.json(db.resultMsg('200', req.body));
+							// res.json(db.resultMsg('200'[0], req.body));
 						}
 					}
 				});
 			} else {
 				console.log("Type error! Please input Integer type ID!!");
-				res.json(db.resultMsg('820', req.body));
+				res.json(db.resultMsg('403'[0], req.body));
 			}
 		} else {
 			console.log("Inventory-host ID does not exist!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	});
 }
@@ -384,7 +384,7 @@ function delInvHost(vhid) {
 
 		} else {
 			console.log("Inventory-Host ID does not exist!!");
-			res.json(db.resultMsg('820', req.body));
+			res.json(db.resultMsg('403'[0], req.body));
 		}
 	});
 }
