@@ -25,4 +25,4 @@ WORKDIR /home/automation-server
 RUN npm install -g pm2
 
 # source copy
-COPY ./ /home/automation-server
+COPY ./src /home/automation-server

@@ -37,8 +37,6 @@ router.post('/', (req, res, next) => {
           const vmpk = resultMCred.private_key;
           //Host
           selectHosts(resultJT.iid).then((resultH) => {
-            // console.log(resultJT);
-            //console.log('######host : '+resultH);
             let inventoryUrl = vdic + "/hosts";
             let envUrl = vdic + "/vars";
             let pkUrl = vdic + "/id_dsa_pk";
@@ -86,7 +84,6 @@ router.post('/', (req, res, next) => {
             insertJob(resultJT).then((result) => {
               vjid = result;
               vjdata['jid'] = vjid;
-              //res.json(db.resultMsg('200'[0], vjdata));
             });
 
             let args = ['-i', inventoryUrl, '-e', '@' + envUrl, vforksCli, vverb, playbookUrl];
@@ -97,13 +94,11 @@ router.post('/', (req, res, next) => {
             }
             console.log('### COMMAND ARGS :  ', args);
 
-            //let ansible = spawn('ansible-playbook',args);
             const ansible = spawn('ansible-playbook', args, {
               stdio: ['inherit', 'pipe']
             });
 
             ansible.stdout.on('data', (data) => {
-              //console.log('#### Pocess_id : ' + ansible.pid + ' #### Job ID : ' + vjid);
               const vpid = ansible.pid
               insertJobevent(data, vjid, vpid, vcheck);
             });
@@ -136,8 +131,6 @@ router.post('/', (req, res, next) => {
         console.log('Job Template ID does not exist in database');
         res.json(db.resultMsg('500'[2], req.body));
       }
-      // console.log(resultJT);
-      // console.log(resultJT.cname);
 
 
     }).catch((err) => {
@@ -148,7 +141,6 @@ router.post('/', (req, res, next) => {
 
     // Excuting Ansible-PlayBook is end
   } else {
-
     // ADHOC excute
     selectAHTemplate(vtid).then((resultAHT) => {
       if (resultAHT != null && resultAHT.use_yn == 'Y') {
@@ -213,7 +205,6 @@ router.post('/', (req, res, next) => {
             insertJob(resultAHT).then((result) => {
               vjid = result;
               vjdata['jid'] = vjid;
-              //res.json(db.resultMsg('200'[0], vjdata));
             });
 
             const args = ['hosts', '-i', inventoryUrl, '-e', '@' + envUrl, vforksCli, vverb, '-m', vmodule];
@@ -235,26 +226,21 @@ router.post('/', (req, res, next) => {
 
             console.log('### COMMAND ARGS :  ', args);
 
-            //const ansible = spawn('ansible',args);
             const ansible = spawn('ansible', args, {
               stdio: ['inherit', 'pipe']
             });
 
             ansible.stdout.on('data', (data) => {
-              //console.log('#### Pocess_id : ' + ansible.pid + ' #### Job ID : ' + vjid);
               const vpid = ansible.pid
               insertJobevent(data, vjid, vpid, vcheck);
             });
 
             ansible.stderr.on('data', (data) => {
               console.log(new Date() + 'ipconfig error...');
-              //t_jobs에 Status에 실패로 업데이트 해야 함....
-
             });
 
             ansible.on('close', (code) => {
               console.log(new Date() + 'ADHOC command complete...' + code);
-              //t_jobs에 Status에 성공으로 업데이트 해야 함....
               updateJobevent(code, vjid);
               // DELETE Directory
               rmDir(vdic);

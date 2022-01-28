@@ -34,7 +34,6 @@ router.get('/playbook', (req, res, next) => {
           }
         }
       });
-      // console.log(pbArray);
       res.json(playbookRes('200'[0], pbArray.length, pbArray));
     }
   });
@@ -103,7 +102,6 @@ router.get('/getJoinIvt', (req, res, next) => {
         if (rows.rowCount < 1) {
           res.json(db.resultMsg('500'[2], rows.rows));
         } else {
-          // console.log(db.resultMsg('200'[0], rows.rows[0]));
           res.json(db.resultMsg('200'[0], rows.rows));
         }
       });
@@ -133,7 +131,6 @@ router.get('/chkIvnDupl', (req, res, next) => {
         if (rows.rowCount < 1) {
           res.json(db.resultMsg('500'[2], rows.rows));
         } else {
-          // console.log(db.resultMsg('200'[0], rows.rows[0]));
           res.json(db.resultMsg('200'[0], rows.rows));
         }
       });
@@ -162,7 +159,6 @@ router.get('/chkHstDupl', (req, res, next) => {
         if (rows.rowCount < 1) {
           res.json(db.resultMsg('500'[2], rows.rows));
         } else {
-          // console.log(db.resultMsg('200'[0], rows.rows[0]));
           res.json(db.resultMsg('200'[0], rows.rows));
         }
       });
@@ -192,7 +188,6 @@ router.get('/chkCredDupl', (req, res, next) => {
         if (rows.rowCount < 1) {
           res.json(db.resultMsg('500'[2], rows.rows));
         } else {
-          // console.log(db.resultMsg('200'[0], rows.rows[0]));
           res.json(db.resultMsg('200'[0], rows.rows));
         }
       });
@@ -222,7 +217,6 @@ router.get('/analyzedResult', (req, res, next) => {
         if (rows.rows == "") {
           res.json(db.resultMsg('500'[2], rows.rows));
         } else {
-          // console.log(db.resultMsg('200'[0], rows.rows[0]));
           let pbResult = '';
           let resResult = '';
           rows.rows.forEach((item) => {
@@ -232,7 +226,7 @@ router.get('/analyzedResult', (req, res, next) => {
           if (pbResult.indexOf('PLAY RECAP') > -1) {
             //Play RECAP Parsing
             let playRecap = pbResult.split('\\n');
-            //console.log(playRecap);
+
             // excuted hosts
             let hosts = [];
             let pbSuccessOrFail = [];
@@ -248,19 +242,15 @@ router.get('/analyzedResult', (req, res, next) => {
             pbSuccessOrFail.forEach((item) => {
               if (item != '') {
                 vsof.push(item.split('\\n'));
-                // vsof.push(item.replace(/(\s*)/g,""));
               }
             });
-            // console.log('####################11 : ' + vsof);
 
             let vsof2 = '';
             pbSuccessOrFail.forEach((item) => {
               if (item != '') {
                 vsof2 += item.split(' ');
-                // vsof.push(item.replace(/(\s*)/g,""));
               }
             });
-            // console.log('####################22 : ' + vsof2);
 
             let vsof3 = vsof2.split(',');
             let vsof4 = [];
@@ -269,7 +259,6 @@ router.get('/analyzedResult', (req, res, next) => {
                 vsof4.push(item.substring(item.lastIndexOf('=') + 1));
               }
             });
-            //console.log('####################33 : ' + vsof4);
 
             resResult += 'The number of executed hosts : ' + hosts.length + '\\n';
 
@@ -304,7 +293,6 @@ router.get('/analyzedResult', (req, res, next) => {
             }
 
             resResult += 'The number of unreachabled hosts : ' + unReacherableCountArr.length + '\\n';
-            // console.log(resResult);
 
             res.json(db.resultMsg('200'[0], resResult));
 
@@ -389,15 +377,11 @@ router.get('/terminateOneJob', (req, res, next) => {
 
 function killProcess(vpid) {
   let lookupPs = 'ps -ef | grep ' + vpid + ' | awk \'{print $2,$3}\' ';
-  //console.log('#### lookup process comand : '+lookupPs);
-
 
   return new Promise((resolve, reject) => {
 
     for (let i = 0; i < 2; i++) {
       exec(lookupPs, (err, stdout, stderr) => {
-        //console.log('### lookup Process stdout : '+ stdout);
-
         let vppid1 = stdout.split('\n');
         let vppid2 = [];
         let killPs = '';
@@ -422,14 +406,11 @@ function killProcess(vpid) {
           if (killErr != null) {
             console.log('### Kill Process error : ' + killErr);
             return reject(killErr);
-            // res.json(db.resultMsg('200'[3], killStdout));
           }
         });
 
         if (err != null) {
           console.log('### Kill Process error : ' + err);
-
-          //res.json(db.resultMsg('200'[3], stderr));
         }
       });
     }

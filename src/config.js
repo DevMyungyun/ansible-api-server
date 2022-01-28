@@ -1,6 +1,6 @@
 module.exports = {
 		"webport": process.argv[2] || "8888",
-		"dbserver": process.argv[3] || "localhost",
+		"dbserver": process.argv[3] || "postgres.database",
 		"dbuser": process.argv[4] || "postgres",
 		"dbpass": process.argv[5] || "test1234",
 		"database": process.argv[6] || "automation",

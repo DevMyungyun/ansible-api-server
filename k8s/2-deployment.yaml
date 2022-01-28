@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: automation-server
+  namespace: skaffold
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: automation
+  template:
+    metadata:
+      name: automation
+      labels:
+        app: automation
+    spec:
+      containers:
+        - name: automation-server
+          image: devmyungyun/automation-server
+          imagePullPolicy: Always
+          # imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: Asia/Seoul
+          ports:
+            - containerPort: 8888
+          command:
+            [ 'sh', '-c', 'npm install; node /home/automation-server/bin/automation.js' ]
+            #[ 'sh', '-c', 'npm install; pm2-runtime /home/automation-server/pm2-app.json' ]
+      imagePullSecrets:
+        - name: regcred

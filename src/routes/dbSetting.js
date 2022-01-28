@@ -27,139 +27,36 @@ router.get('/deleteDB', (req, res, next) => {
   res.json(db.resultMsg('200'[1], req.body));
 });
 
-
-
 /* Create database table */
-router.get('/createTable', (req, res, next) => {
-
-  createIvtTable().then((result) => {
-    // console.log(result);
-    if (result != null) {
-      console.log('Success to create Inventory table');
-
+router.get('/createDB', (req, res, next) => {
+  try {
+    createIvtTable().then((itresult) => {
       createIvtIndex().then((iresult) => {
-        if (iresult != null) {
-          console.log('>>> Success to create Inventory index');
-
           createHostTable().then((hresult) => {
-            if (hresult != null) {
-              console.log('>>> Success to create Host table');
-
-              // createHostIndex().then(function(hresult2){
-              //     if(hresult2 != null) {
-              //         console.log('>>> Success to create Host index');
-
               createIvtHostJoin().then((jresult) => {
-                if (jresult != null) {
-                  console.log('>>> Success to create Inventory-Host join table');
-
                   createTriggerFunc().then((fresult) => {
-                    if (fresult != null) {
-                      console.log('>>> Success to create Trigger Function');
-
-                      createTrigger().then((tresult) => {
-                        if (tresult != null) {
-                          console.log('>>> Success to create Trigger');
-                        } else {
-                          console.log('>>> Fail to create Trigger');
-                          res.json(db.resultMsg('500'[0], req.body));
-                        }
-                      });
-                    } else {
-                      console.log('>>> Fail to create Trigger Function');
-                      res.json(db.resultMsg('500'[0], req.body));
-                    }
+                    createTrigger()
                   });
-                } else {
-                  console.log('>>> Fail to create Inventory-Host join table');
-                  res.json(db.resultMsg('500'[0], req.body));
-                }
               });
-
-              // } else {
-              //     console.log('>>> Fail to create Host index');
-              //     res.json(db.resultMsg('500'[0], req.body));
-              // }
-              // });
-            } else {
-              console.log('>>> Fail to create Host table');
-              res.json(db.resultMsg('500'[0], req.body));
-            }
           });
-
-        } else {
-          console.log('>>> Fail to create Inventory index');
-          res.json(db.resultMsg('500'[0], req.body));
-        }
       });
-    } else {
-      console.log('>>> Fail to create Inventory table');
-      res.json(db.resultMsg('500'[0], req.body));
-    }
-  });
+    });
 
+    createTempTable()
+    createJobTable()
+    createJobEventTable()
+    createCredTable()
+    createAdhocTable()
+  
+    createCommonCodeTable().then((ccresult) => {
+        istCommonCodeTable()
+    });
 
-  createTempTable().then((result) => {
-    if (result != null) {
-      console.log('>>> Success to create Template table');
-    } else {
-      console.log('>>> Fail to create Template table');
-      res.json(db.resultMsg('500'[0], req.body));
-    }
-  });
-
-  createJobTable().then((result) => {
-    if (result != null) {
-      console.log('>>> Success to create Job table');
-    } else {
-      console.log('>>> Fail to create Job table');
-      res.json(db.resultMsg('500'[0], req.body));
-    }
-  });
-
-  createJobEventTable().then((result) => {
-    if (result != null) {
-      console.log('>>> Success to create Job Event table');
-    } else {
-      console.log('>>> Fail to create Job Event table');
-      res.json(db.resultMsg('500'[0], req.body));
-    }
-  });
-
-  createCredTable().then((result) => {
-    if (result != null) {
-      console.log('>>> Success to create Credential table');
-    } else {
-      console.log('>>> Fail to create Credential table');
-      res.json(db.resultMsg('500'[0], req.body));
-    }
-  });
-
-  createAdhocTable().then((ahresult) => {
-    if (ahresult != null) {
-      console.log('>>> Success to create ADHOC table');
-    } else {
-      console.log('>>> fail to create ADHOC table');
-    }
-  });
-
-  createCommonCodeTable().then((ccresult) => {
-    if (ccresult != null) {
-      console.log('>>> Success to create Common Code table');
-
-      istCommonCodeTable().then((istResult) => {
-        if (istResult != null) {
-          console.log('>>> Success to insert Common Code datas');
-        } else {
-          console.log('>>> Success to insert Common Code datas');
-        }
-      })
-    } else {
-      console.log('>>> Success to create Common Code table');
-    }
-  });
-
-  res.json(db.resultMsg('200'[1], req.body));
+    res.json(db.resultMsg('200'[1], req.body));
+  } catch (err) {
+    console.log("error occur when database table creating : ", err);
+    res.json(db.resultMsg('500'[0], req.body));
+  }
 });
 
 // Create Inventory table
@@ -172,7 +69,6 @@ function createIvtTable() {
         return reject(err);
       }
       resolve(rows);
-      // res.json(db.resultMsg('200'[0], rows.rows));
     });
   });
 }

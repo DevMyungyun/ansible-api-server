@@ -1,5 +1,11 @@
 class sql {
 
+  createDB () {
+    let stringQuery = "";
+    stringQuery += "create database automation ";
+    return stringQuery
+  }
+
   dropTable () {
     let stringQuery = "";
     stringQuery += " drop table ";

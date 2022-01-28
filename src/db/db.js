@@ -51,6 +51,7 @@ class db {
 	iquery (queryString, params, callback) {
 		const start = Date.now();
 		const curDate = Date(start);
+		console.log("######", pool);
 		return pool.query(queryString, params, (err, rows) => {
 			const duration = Date.now() - start;
 			console.log('>>> ' + curDate + ' excuted query', {
