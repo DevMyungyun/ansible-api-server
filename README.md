@@ -7,6 +7,7 @@ This is API web server with Ansible.
 This web server for control Ansible with PostgreSQL database.
 
 ### Prerequisites
+* Node.js Version v12.xx.x
 
 OS
 * Redhat or CentOS(recommand)
