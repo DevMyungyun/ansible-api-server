@@ -1,0 +1,44 @@
+{
+  "name": "itmsg_automation",
+  "version": "1.3.1",
+  "private": false,
+  "scripts": {
+    "build": "pkg . --out-path dist --targets node12-linux-x64 "
+  },
+  "bin": {
+    "automation": "./bin/automation.js"
+  },
+  "pkg": {
+    "scripts": "build/**/*.js",
+    "assets": [
+      "views/**/*",
+      "public/js/*.js"
+    ]
+  },
+  "author": {
+    "name": "Myung Yun",
+    "email": "myungyuncho82@gmail.com"
+  },
+  "contributors": {
+    "name": "blueseam",
+    "email": "blueseam@gmail.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "ejs": "~2.5.7",
+    "express": "~4.16.0",
+    "http-errors": "~1.6.2",
+    "morgan": "~1.9.0",
+    "node-rsa": "^1.0.1",
+    "pg": "^7.5.0",
+    "rimraf": "^2.6.3",
+    "yargs": "^12.0.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "pkg": "^4.4.8"
+  }
+}

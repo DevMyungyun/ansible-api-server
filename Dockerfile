@@ -1,4 +1,4 @@
-FROM node:14.15.1-alpine
+FROM node:12-alpine3.14
 
 ENV ANSIBLE_VERSION 2.7.4
 ENV ANSIBLE_LINT 3.5.1
@@ -9,8 +9,9 @@ RUN cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 RUN echo "Asia/Seoul" >  /etc/timezone
 
 # ansible install
-RUN apk add --update python py-pip openssl ca-certificates bash git sudo zip \
-    && apk --update add --virtual build-dependencies python-dev libffi-dev openssl-dev build-base \
+RUN apk add --update python2 python3 py-pip python2-dev python3-dev
+RUN apk add --update openssl ca-certificates bash git sudo zip \
+    && apk --update add --virtual build-dependencies libffi-dev openssl-dev build-base \
     && pip install --upgrade pip cffi \
     && echo "Installing Ansible..." \
     && pip install ansible==$ANSIBLE_VERSION ansible-lint==$ANSIBLE_LINT docker-py==$DOCKER_PY_VERSION \
@@ -25,4 +26,4 @@ WORKDIR /home/automation-server
 RUN npm install -g pm2
 
 # source copy
-COPY ./src /home/automation-server
+COPY ./ /home/automation-server

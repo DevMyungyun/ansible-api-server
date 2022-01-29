@@ -1,33 +1,28 @@
 ---
-apiVersion: skaffold/v2beta17
+apiVersion: skaffold/v2beta26
 kind: Config
 build:
   local:
     push: true
     useDockerCLI: true
   tagPolicy:
-    dateTime:
-      format: "2006-01-02_15-04-05.999_MST"
-      timezone: "Local"
+    customTemplate:
+        template: "{{.PREFIX}}"
+        components:
+        - name: PREFIX
+          gitCommit: 
+            prefix: "skaffold-"
+        # - name: DATE
+        #   dateTime:
+        #     format: "2006-01-02_15-04-05.999_MST"
+        #     timezone: "Local"
   artifacts:
     - image: devmyungyun/automation-server
       context: .
-      
-profiles:
-  - name: dev
-    activation:
-      - command: dev
-    build:
-      artifacts:
-      - image: devmyungyun/automation-server
-        context: .
-        docker:
-          buildArgs:
-            ENV: development
-        sync:
-          manual:
-            - src: '**/*'
-              dest: .
+      sync:
+        manual:
+          - src: './**/*'
+            dest: .        
 deploy:
   kubectl:
     manifests:
