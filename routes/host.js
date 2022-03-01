@@ -195,8 +195,8 @@ router.get('/', (req, res, next) => {
 		totalCount(req).then((result) => {
 			vdata['rowCount'] = rows.rowCount;
 			vdata['totalCount'] = result;
-			// vdata['page'] = vpage;
-			// vdata['pageSize'] = vpageSize;
+			vdata['page'] = vpage;
+			vdata['pageSize'] = vpageSize;
 			vdata['list'] = rows.rows;
 
 			if (vdata.rowCount < 1) {

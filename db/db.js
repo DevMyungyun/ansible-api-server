@@ -42,7 +42,7 @@ class db {
 			console.log('>>> ' + curDate + ' excuted query', {
 				queryString,
 				duration,
-				rows: rows.rowCount
+				rows: rows
 			});
 			callback(err, rows);
 		})
@@ -55,7 +55,8 @@ class db {
 			const duration = Date.now() - start;
 			console.log('>>> ' + curDate + ' excuted query', {
 				queryString,
-				duration
+				duration,
+				rows: rows
 			});
 			callback(err, rows);
 		});
