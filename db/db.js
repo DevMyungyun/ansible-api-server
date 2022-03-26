@@ -24,7 +24,7 @@ const errorMsg = {
 	"403": {
 		0: "check a input data",
 		1: "duplicate key value",	
-	},
+	},	
 	"500": {
 		0: "fail create",
 		1: "database Error",
@@ -39,7 +39,7 @@ class db {
 		const curDate = Date(start);
 		return pool.query(queryString, params, (err, rows) => {
 			const duration = Date.now() - start;
-			console.log('>>> ' + curDate + ' excuted query', {
+			console.log('[' + curDate + '] : ', {
 				queryString,
 				duration,
 				rows: rows
@@ -53,7 +53,7 @@ class db {
 		const curDate = Date(start);
 		return pool.query(queryString, params, (err, rows) => {
 			const duration = Date.now() - start;
-			console.log('>>> ' + curDate + ' excuted query', {
+			console.log('[' + curDate + '] :', {
 				queryString,
 				duration,
 				rows: rows
