@@ -8,7 +8,6 @@ var app = require('../app');
 var debug = require('debug')('ansibletest:server');
 var http = require('http');
 var conf = require('../config.js');
-var spawn = require('child_process').spawn;
 var exec = require('child_process').exec;
 
 /**

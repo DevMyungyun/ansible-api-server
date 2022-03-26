@@ -6,7 +6,7 @@ describe('DB Connect Test', function() {
         
 		db.iquery(sql.getOneRow, [1], (err, rows) => {
 			if (err) {
-				console.log(err);
+				console.error(err);
 			}
 
 			if (rows.rowCount < 1) {

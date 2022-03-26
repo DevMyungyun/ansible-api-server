@@ -73,14 +73,14 @@
     return stringQuery
   }
 
-  delete (vseq) {
+  delete () {
     let stringQuery = "";
     stringQuery += " DELETE FROM t_adhoc ";
     stringQuery += " WHERE tid  In ( $1 ) ";
     return stringQuery
   }
 
-  getOneRow (vseq) {
+  getOneRow () {
     let stringQuery = "";
     stringQuery += " SELECT tid, name, content, iid, iname, cname, module, argument, forks, limits, verb, variables, use_yn, create_dt, create_id, update_dt, update_id ";
     stringQuery += " FROM  t_adhoc ";
@@ -88,23 +88,22 @@
     return stringQuery
   }
 
-  getList (vname, vstart, vpageSize) {
+  getList (name) {
     let stringQuery = "";
     stringQuery += " SELECT tid, name, content, iid, iname, cname, module, argument, forks, limits, verb, variables, use_yn, to_char(create_dt, \'yyyy-mm-dd hh24:mi:ss\') as create_dt , create_id, to_char(update_dt, \'yyyy-mm-dd hh24:mi:ss\') as update_dt , update_id ";
     stringQuery += " FROM t_adhoc ";
-    if (vname.length > 2) {
-      stringQuery += " WHERE name like \'%" + vname + "%\' ";
+    if (name.length > 2) {
+      stringQuery += " WHERE name like \'%" + name + "%\' ";
     }
-    stringQuery += " ORDER BY tid DESC ";
-    stringQuery += " LIMIT " + vpageSize + " OFFSET " + vstart;
+    stringQuery += " LIMIT $1 OFFSET $2";
     return stringQuery
   
   }
 
-  totalCount (vname) {
+  totalCount (name) {
     let stringQuery = 'SELECT COUNT(*) AS total FROM t_adhoc ';
-    if (vname.length > 2) {
-      stringQuery += " WHERE name like \'%" + vname + "%\' ";
+    if (name.length > 2) {
+      stringQuery += " WHERE name like \'%" + name + "%\' ";
     }
     return stringQuery
   }

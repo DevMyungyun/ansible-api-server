@@ -1,117 +1,117 @@
 class AdhocBuilder {
-    constructor(vname, 
-                vcontent, 
-                viid, 
-                viname, 
-                vcname, 
-                vmodule, 
-                varg, 
-                vforks, 
-                vlimits, 
-                vverb, 
-                vvariables, 
-                vuse_yn) {
-        this.vname      = vname;
-        this.vcontent   = vcontent;
-        this.viid       = viid;
-        this.viname     = viname;
-        this.vcname     = vcname;
-        this.vmodule    = vmodule;
-        this.varg       = varg;
-        this.vforks     = vforks;
-        this.vlimits    = vlimits;
-        this.vverb      = vverb;
-        this.vvariables = vvariables;
-        this.vuse_yn    = vuse_yn;
+    constructor(name, 
+                content, 
+                iid, 
+                iname, 
+                cname, 
+                module, 
+                arg, 
+                forks, 
+                limits, 
+                verb, 
+                variables, 
+                use_yn) {
+        this.name      = name;
+        this.content   = content;
+        this.iid       = iid;
+        this.iname     = iname;
+        this.cname     = cname;
+        this.module    = module;
+        this.arg       = arg;
+        this.forks     = forks;
+        this.limits    = limits;
+        this.verb      = verb;
+        this.variables = variables;
+        this.use_yn    = use_yn;
     }
 
-    setVname        (vname) {
-        this.vname = vname;
+    setName        (name) {
+        this.name = name;
         return this;
     }
-    setVcontent     (vcontent) {
-        this.vcontent = vcontent;
+    setContent     (content) {
+        this.content = content;
         return this;
     }
-    setViid         (viid) {
-        this.viid = viid;
+    setIid         (iid) {
+        this.iid = iid;
         return this;
     }
-    setViname       (viname) {
-        this.viname = viname;
+    setIname       (iname) {
+        this.iname = iname;
         return this;
     }
-    setVcname       (vcname) {
-        this.vcname = vcname;
+    setCname       (cname) {
+        this.cname = cname;
         return this;
     }
-    setVmodule      (vmodule) {
-        this.vmodule = vmodule;
+    setModule      (module) {
+        this.module = module;
         return this;
     }
-    setVarg         (varg) {
-        this.varg = varg;
+    setArg         (arg) {
+        this.arg = arg;
         return this;
     }
-    setVforks       (vforks) {
-        this.vforks = vforks;
+    setForks       (forks) {
+        this.forks = forks;
         return this;
     }
-    setVlimits      (vlimits) {
-        this.vlimits = vlimits;
+    setLimits      (limits) {
+        this.limits = limits;
         return this;
     }
-    setVverb        (vverb) {
-        this.vverb = vverb;
+    setVerb        (verb) {
+        this.verb = verb;
         return this;
     }
-    setVvariables   (vvariables) {
-        this.vvariables = vvariables;
+    setVariables   (variables) {
+        this.variables = variables;
         return this;
     }
-    setVuse_yn      (vuse_yn) {
-        this.vuse_yn = vuse_yn;
+    setUse_yn      (use_yn) {
+        this.use_yn = use_yn;
         return this;
     }   
     
     build() {
-        if(!('vname' in this) || typeof this.vname === 'undefined') {
-            throw new Error("There is no vname parameter...")
+        if(!('name' in this) || typeof this.name === 'undefined') {
+            throw new Error("There is no name parameter...")
         }
-        if(!('vcontent' in this) || typeof this.vcontent === 'undefined') {
-            throw new Error("There is no vcontent parameter...")
+        if(!('content' in this) || typeof this.content === 'undefined') {
+            throw new Error("There is no content parameter...")
         }
-        if(!('viid' in this) || typeof this.viid === 'undefined') {
-            throw new Error("There is no viid parameter...")
+        if(!('iid' in this) || typeof this.iid === 'undefined') {
+            throw new Error("There is no iid parameter...")
         }
-        if(!('viname' in this) || typeof this.viname === 'undefined') {
-            throw new Error("There is no viname parameter...")
+        if(!('iname' in this) || typeof this.iname === 'undefined') {
+            throw new Error("There is no iname parameter...")
         }
-        if(!('vcname' in this) || typeof this.vcname === 'undefined') {
-            throw new Error("There is no vcname parameter...")
+        if(!('cname' in this) || typeof this.cname === 'undefined') {
+            throw new Error("There is no cname parameter...")
         }
-        if(!('vmodule' in this) || typeof this.vmodule === 'undefined') {
-            throw new Error("There is no vmodule parameter...")
+        if(!('module' in this) || typeof this.module === 'undefined') {
+            throw new Error("There is no module parameter...")
         }
-        if(!('vforks' in this) || typeof this.vforks == 'undefined') {
-            throw new Error("There is no vforks parameter...")
+        if(!('forks' in this) || typeof this.forks == 'undefined') {
+            throw new Error("There is no forks parameter...")
         }
-        if(!('vverb' in this) || typeof this.vverb === 'undefined') {
-            throw new Error("There is no vverb parameter...")
+        if(!('verb' in this) || typeof this.verb === 'undefined') {
+            throw new Error("There is no verb parameter...")
         }
 
-        return new AdhocBuilder(this.vname,
-                            this.vcontent,
-                            this.viid,
-                            this.viname,
-                            this.vcname,
-                            this.vmodule,
-                            this.varg,
-                            this.vforks,
-                            this.vlimits,
-                            this.vverb,
-                            this.vvariables,
-                            this.vuse_yn)
+        return new AdhocBuilder(this.name,
+                            this.content,
+                            this.iid,
+                            this.iname,
+                            this.cname,
+                            this.module,
+                            this.arg,
+                            this.forks,
+                            this.limits,
+                            this.verb,
+                            this.variables,
+                            this.use_yn)
     }
 
 }
