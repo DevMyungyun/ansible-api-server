@@ -29,8 +29,7 @@ router.post('/', function (req, res) {
 							, dto.verb, dto.variables, dto.use_yn], 
 							(err) => {
 		if (err) {
-			console.error(err);
-			return res.status(500).json(db.resultMsg('500'[1], err))
+			next(err);
 		}
 
 		return res.json(db.resultMsg('200'[1], req.body));
@@ -61,10 +60,9 @@ router.put('/', function (req, res, next) {
 							, dto.arg, dto.forks, dto.limits
 							, dto.verb, dto.variables, dto.use_yn, seq], (err, rows) => {
 		if (err) {
-			console.error(err);
-			return res.status(500).json(db.resultMsg('500'[1], err))
+			next(err);
 		}
-			return res.json(db.resultMsg('200'[1], req.body));
+		return res.json(db.resultMsg('200'[1], req.body));
 	});
 
 });
@@ -75,8 +73,7 @@ router.delete('/', function (req, res, next) {
 
 	db.iquery(sql.delete(), [vseq], (err) => {
 		if (err) {
-			console.error(err);
-			return res.status(500).json(db.resultMsg('500'[1], err))
+			next(err);
 		}
 		return res.json(db.resultMsg('200'[1], req.body));
 	});	
@@ -88,8 +85,7 @@ router.get('/o', (req, res, next) => {
 
 	db.query(sql.getOneRow(), [seq], (err, rows) => {
 		if (err) {
-			console.error(err);
-			return res.status(500).json(db.resultMsg('500'[2], err));
+			next(err);
 		}
 		return res.json(db.resultMsg('200'[0], rows.rows[0]));
 	});
@@ -98,8 +94,8 @@ router.get('/o', (req, res, next) => {
 /* GET adhoc template listing. */
 router.get('/', function (req, res, next) {
 	let data = {};
-	const page = req.query.page ? addslashes(req.query.page) : "";
-	const pageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
+	let page = req.query.page ? addslashes(req.query.page) : "";
+	let pageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
 	const name = req.query.name ? addslashes(req.query.name) : "";
 
 	if (page == "" || page < 1) {
@@ -112,8 +108,7 @@ router.get('/', function (req, res, next) {
 
 	db.iquery(sql.getList(name), [pageSize, start], (err, rows) => {
 		if (err) {
-			console.error(err);
-			return res.status(500).json(db.resultMsg('500'[2], rows.rows[0]));
+			next(err);
 		}
 
 		totalCount(name).then(function (result) {
