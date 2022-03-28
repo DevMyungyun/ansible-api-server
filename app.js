@@ -32,16 +32,16 @@ app.use(express.urlencoded({
 }));
 app.use(cookieParser());
 
-app.use('/', indexRouter);
-app.use('/inventory', inventoryRouter);
-app.use('/ivtHst', invHstRouter);
-app.use('/jobevent', jobeventRouter);
-app.use('/host', hostRouter);
-app.use('/jobtemp', jobtempRouter);
-app.use('/job', jobRouter);
-app.use('/cred', credRouter);
-app.use('/adhoc', adhocRouter);
-app.use('/dbSetting', dbSettingRouter);
+app.use('/v1/', indexRouter);
+app.use('/v1/inventory', inventoryRouter);
+app.use('/v1/ivtHst', invHstRouter);
+app.use('/v1/jobevent', jobeventRouter);
+app.use('/v1/host', hostRouter);
+app.use('/v1/jobtemp', jobtempRouter);
+app.use('/v1/job', jobRouter);
+app.use('/v1/cred', credRouter);
+app.use('/v1/adhoc', adhocRouter);
+app.use('/v1/dbSetting', dbSettingRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

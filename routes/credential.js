@@ -1,197 +1,138 @@
 const express = require('express');
 const router = express.Router();
 const rsa = require('node-rsa');
-
 const db = require('../db/db.js');
-const sql = require('../db/sql/credentialSql.js')
 const addslashes = require('../db/addslashes.js');
-const conf = require('../config.js');
 
+const credBuilder = require('../dto/credBuilder');
+const sql = require('../db/sql/credentialSql.js');
+
+const conf = require('../config.js');
 const key = new rsa(conf.rsa);
 
 // Post credential (Insert)
 router.post('/', (req, res, next) => {
-	let vname = req.body.name ? addslashes(req.body.name) : "";
-	let vcontent = req.body.content ? addslashes(req.body.content) : "";
-	let vmid = req.body.mid ? addslashes(req.body.mid) : "";
-	let vmpw = req.body.mpw ? addslashes(req.body.mpw) : "";
-	let vtype = req.body.type ? addslashes(req.body.type) : "";
-	let vpk = req.body.private_key ? addslashes(req.body.private_key) : "";
+	// let vname = req.body.name ? addslashes(req.body.name) : "";
+	// let vcontent = req.body.content ? addslashes(req.body.content) : "";
+	// let vmid = req.body.mid ? addslashes(req.body.mid) : "";
+	// let vmpw = req.body.mpw ? addslashes(req.body.mpw) : "";
+	// let vtype = req.body.type ? addslashes(req.body.type) : "";
+	// let vpk = req.body.private_key ? addslashes(req.body.private_key) : "";
 	let encryptedPw = '';
 	let encryptePK = '';
 
-	if (vmpw) {
-		encryptedPw = key.encrypt(vmpw, 'base64');
-	}
+	const body = req.body;
+	const dto = new credBuilder().setName(body.name)
+								.setContent(body.content)
+								.setMid(body.mid)
+								.setMpw(body.mpw)
+								.setType(body.type)
+								.setPrivate_key(body.private_key)
+								.build();
 
-	if (vpk) {
-		encryptePK = key.encrypt(vpk, 'base64');
-	}
+	encryptedPw = key.encrypt(dto.mpw, 'base64');
+	encryptePK = key.encrypt(dto.private_key, 'base64');
 
-	let stringQuery = sql.post(vname, vcontent, vmid, encryptedPw, encryptePK, vtype)
-
-	db.iquery(stringQuery, [], (err, rows) => {
+	console.log(dto);
+	db.iquery(sql.post(), [dto.name, dto.content, dto.mid
+							, encryptedPw, encryptePK, dto.type], (err, rows) => {
 		if (err) {
 			return next(err);
 		}
-
-		if (rows.rowCount < 1) {
-			res.json(db.resultMsg('403'[1], req.body));
-		} else {
-			res.json(db.resultMsg('200'[0], req.body));
-		}
+		delete body.mpw;
+		res.json(db.resultMsg('200'[0], body));
 	});
 });
 
 /* PUT credential (Update) */
 router.put('/', (req, res, next) => {
-	let vname = req.query.name ? addslashes(req.query.name) : "";
-	let vcontent = req.body.content ? addslashes(req.body.content) : "";
-	let vmid = req.body.mid ? addslashes(req.body.mid) : "";
-	let vmpw = req.body.mpw ? addslashes(req.body.mpw) : "";
-	let vpk = req.body.private_key ? addslashes(req.body.private_key) : "";
+	// let vname = req.query.name ? addslashes(req.query.name) : "";
+	// let vcontent = req.body.content ? addslashes(req.body.content) : "";
+	// let vmid = req.body.mid ? addslashes(req.body.mid) : "";
+	// let vmpw = req.body.mpw ? addslashes(req.body.mpw) : "";
+	// let vpk = req.body.private_key ? addslashes(req.body.private_key) : "";
 	let encryptedPw = '';
 	let encryptePK = '';
 
-	if (vmpw) {
-		encryptedPw = key.encrypt(vmpw, 'base64');
-	}
+	const body = req.body;
+	const dto = new credBuilder().setName(req.query.name)
+								.setContent(body.content)
+								.setMid(body.mid)
+								.setMpw(body.mpw)
+								.setType(body.type)
+								.setPrivate_key(body.private_key)
+								.build();
 
-	if (vpk) {
-		encryptePK = key.encrypt(vpk, 'base64');
-	}
+	if(dto.mpw) encryptedPw = key.encrypt(dto.mpw, 'base64');
+	if(dto.private_key)	encryptePK = key.encrypt(dto.private_key, 'base64');
 
-	if (vname) {
-		if (typeof vname == 'string') {
-			let stringQuery = sql.update(vcontent, vmid, encryptedPw, encryptePK, vname)
-
-			db.iquery(stringQuery, [], (err, rows) => {
-				if (err) {
-					return next(err);
-				}
-
-				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('403'[1], req.body));
-				} else {
-					res.json(db.resultMsg('200'[0], req.body));
-				}
-			});
-		} else {
-			console.log("Type error! Please input String type ID!!");
-			res.json(db.resultMsg('403'[0], req.body));
+	db.iquery(sql.update(encryptedPw, encryptePK), [dto.content, dto.mid
+							, dto.type, dto.name], (err, rows) => {
+		if (err) {
+			return next(err);
 		}
-	} else {
-		console.log("Credential ID does not exist!!");
-		res.json(db.resultMsg('403'[0], req.body));
-	}
-
+		res.json(db.resultMsg('200'[0], req.body));
+	});
 });
 
 /* DELETE credential (delete) */
 router.delete('/', (req, res, next) => {
-	let vname = req.query.name ? addslashes(req.query.name) : "";
-	let nameArray = vname.split(',');
-	let nameString = '';
-	nameString += '\'' + nameArray[0] + '\''
+	let name = req.query.name ? addslashes(req.query.name) : "";
 
-	for (var i = 1; i < nameArray.length; i++) {
-		nameString += ', \'' + nameArray[i] + '\''
-	}
-
-	if (nameString) {
-		if (typeof nameString === 'string') {
-			let stringQuery = sql.delete(nameString)
-
-			db.iquery(stringQuery, [], (err, rows) => {
-				if (err) {
-					return next(err);
-				}
-
-				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('403'[1], req.body));
-				} else {
-					res.json(db.resultMsg('200'[0], req.body));
-				}
-			});
-
-		} else {
-			console.log("Type error! Please input String type ID!!");
-			res.json(db.resultMsg('403'[0], req.body));
+	db.iquery(sql.delete(), [name], (err, rows) => {
+		if (err) {
+			return next(err);
 		}
-	} else {
-		console.log("Credential ID does not exist!!");
-		res.json(db.resultMsg('403'[0], req.body));
-	}
+		res.json(db.resultMsg('200'[0], req.body));
+	});
 
 });
 
 /* GET Credential (SELECT ONE) */
 router.get('/o', (req, res, next) => {
-	let vname = req.query.name ? addslashes(req.query.name) : "";
+	let name = req.query.name ? addslashes(req.query.name) : "";
 
-	if (vname) {
-		if (typeof vname === 'string') {
-			let stringQuery = sql.getOneRow(vname)
-
-			db.iquery(stringQuery, [], (err, rows) => {
-				if (err) {
-					return next(err);
-				}
-				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('500'[2], rows.rows[0]));
-				} else {
-					res.json(db.resultMsg('200'[0], rows.rows[0]));
-				}
-			});
-		} else {
-			console.log("Type error! Please input String type ID!!");
-			res.json(db.resultMsg('403'[0], req.body));
+	db.iquery(sql.getOneRow(), [name], (err, rows) => {
+		if (err) {
+			return next(err);
 		}
-	} else {
-		console.log("Credential ID does not exist!!");
-		res.json(db.resultMsg('403'[0], req.body));
-	}
+		
+		res.json(db.resultMsg('200'[0], rows.rows[0]));
 
+	});
 });
 
 /* GET Credential listing. */
 router.get('/', (req, res, next) => {
-	let vdata = {};
-	let vpage = req.query.page ? addslashes(req.query.page) : "";
-	let vpageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
-	let vname = req.query.name ? addslashes(req.query.name) : "";
+	let data = {};
+	let page = req.query.page ? addslashes(req.query.page) : "";
+	let pageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
+	let name = req.query.name ? addslashes(req.query.name) : "";
 
-	if (vpage == "" || vpage < 1) {
-		vpage = 1;
+	if (page == "" || page < 1) {
+		page = 1;
 	}
-	if (vpageSize == "" || vpageSize < 1) {
-		vpageSize = 15;
+	if (pageSize == "" || pageSize < 1) {
+		pageSize = 15;
 	}
-	let vstart = (vpage - 1) * vpageSize;
+	let start = (page - 1) * pageSize;
 
-	let stringQuery = sql.getList(vname)
-
-	let imsi = db.iquery(stringQuery, [], (err, rows) => {
+	db.iquery(sql.getList(name), [pageSize, start], (err, rows) => {
 		if (err) {
 			return next(err);
 		}
 
 		totalCount(req).then((result) => {
-			vdata['rowCount'] = rows.rowCount;
-			vdata['totalCount'] = result;
-			// vdata['page'] = vpage;
-			// vdata['pageSize'] = vpageSize;
-			vdata['list'] = rows.rows;
+			data['rowCount'] = rows.rowCount;
+			data['totalCount'] = result;
+			data['page'] = page;
+			data['pageSize'] = pageSize;
+			data['list'] = rows.rows;
 
-			if (vdata.rowCount < 1) {
-				res.json(db.resultMsg('500'[2], rows.rows));
-			} else {
-				// console.log(db.resultMsg('200'[0], vdata));
-				res.json(db.resultMsg('200'[0], vdata));
-			}
+			res.json(db.resultMsg('200'[0], data));
 		}).catch((err) => {
 			if (err) {
-				console.log(err);
+				console.error(err);
 			}
 		});
 	});
@@ -199,7 +140,7 @@ router.get('/', (req, res, next) => {
 
 
 function totalCount(req) {
-	let vdata = {};
+	let data = {};
 	let vname = req.query.name ? addslashes(req.query.name) : "";
 
 	let stringQuery = sql.totalCount(vname)

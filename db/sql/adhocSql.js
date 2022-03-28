@@ -1,57 +1,10 @@
  class sql {
-   
-  // post (vname, vcontent, viid, viname, vcname, vmodule, varg, vforks, vlimits, vverb, vvariables, vuse_yn) {
-  //   let stringQuery = "";
-  //   stringQuery += " INSERT INTO t_adhoc ( name, content, iid, iname, cname, module, argument, forks, limits, verb, variables, use_yn, create_id) ";
-  //   stringQuery += " VALUES (  \'" + vname + "\', \'" + vcontent + "\', " + viid + ", \'" + viname + "\', \'" + vcname + "\', \'" + vmodule + "\', \'" + varg + "\', " + vforks + ", \'" + vlimits + "\', " + vverb + ", \'" + vvariables + "\', \'" + vuse_yn + "\', \'admin\') ";
-  //   return stringQuery
-  // }
-
   post () {
     let stringQuery = "";
     stringQuery += " INSERT INTO t_adhoc (name, content, iid, iname, cname, module, argument, forks, limits, verb, variables, use_yn, create_id) ";
     stringQuery += " VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, \'admin\') ";
     return stringQuery
   }
-
-  // update (vname, vcontent, viid, viname, vcname, vmodule, varg, vforks, vlimits, vverb, vvariables, vuse_yn, vseq) {
-  //   let stringQuery = "";
-  //   stringQuery += " UPDATE t_adhoc SET ";
-  //   stringQuery += " update_dt = now() ";
-  //   stringQuery += " , update_id = \'admin\' ";
-  //   if (vname) {
-  //     stringQuery += " , name = \'" + vname + "\' ";
-  //   }
-  //   if (vcontent) {
-  //     stringQuery += " , content = \'" + vcontent + "\' ";
-  //   }
-  //   if (viid) {
-  //     stringQuery += " , iid = " + viid + " ";
-  //   }
-  //   if (viname) {
-  //     stringQuery += " , iname = \'" + viname + "\' ";
-  //   }
-  //   if (vcname) {
-  //     stringQuery += " , cname = \'" + vcname + "\' ";
-  //   }
-  //   if (vmodule) {
-  //     stringQuery += " , module = \'" + vmodule + "\' ";
-  //   }
-  //   stringQuery += " , argument = \'" + varg + "\' ";
-  //   if (vforks) {
-  //     stringQuery += " , forks = " + vforks + " ";
-  //   }
-  //   stringQuery += " , limits = \'" + vlimits + "\' ";
-  //   if (vverb) {
-  //     stringQuery += " , verb = " + vverb + " ";
-  //   }
-  //   stringQuery += " , variables = \'" + vvariables + "\' ";
-  //   if (vuse_yn) {
-  //     stringQuery += " , use_yn = \'" + vuse_yn + "\' ";
-  //   }
-  //   stringQuery += " WHERE tid = " + vseq + " ";
-  //   return stringQuery
-  // }
 
   update () {
     let stringQuery = " UPDATE t_adhoc SET ";
