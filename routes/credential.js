@@ -9,15 +9,10 @@ const sql = require('../db/sql/credentialSql.js');
 
 const conf = require('../config.js');
 const key = new rsa(conf.rsa);
+const encodeType = 'base64';
 
 // Post credential (Insert)
 router.post('/', (req, res, next) => {
-	// let vname = req.body.name ? addslashes(req.body.name) : "";
-	// let vcontent = req.body.content ? addslashes(req.body.content) : "";
-	// let vmid = req.body.mid ? addslashes(req.body.mid) : "";
-	// let vmpw = req.body.mpw ? addslashes(req.body.mpw) : "";
-	// let vtype = req.body.type ? addslashes(req.body.type) : "";
-	// let vpk = req.body.private_key ? addslashes(req.body.private_key) : "";
 	let encryptedPw = '';
 	let encryptePK = '';
 
@@ -30,8 +25,8 @@ router.post('/', (req, res, next) => {
 								.setPrivate_key(body.private_key)
 								.build();
 
-	encryptedPw = key.encrypt(dto.mpw, 'base64');
-	encryptePK = key.encrypt(dto.private_key, 'base64');
+	encryptedPw = key.encrypt(dto.mpw, encodeType);
+	encryptePK = key.encrypt(dto.private_key, encodeType);
 
 	console.log(dto);
 	db.iquery(sql.post(), [dto.name, dto.content, dto.mid
@@ -46,11 +41,6 @@ router.post('/', (req, res, next) => {
 
 /* PUT credential (Update) */
 router.put('/', (req, res, next) => {
-	// let vname = req.query.name ? addslashes(req.query.name) : "";
-	// let vcontent = req.body.content ? addslashes(req.body.content) : "";
-	// let vmid = req.body.mid ? addslashes(req.body.mid) : "";
-	// let vmpw = req.body.mpw ? addslashes(req.body.mpw) : "";
-	// let vpk = req.body.private_key ? addslashes(req.body.private_key) : "";
 	let encryptedPw = '';
 	let encryptePK = '';
 
@@ -63,8 +53,8 @@ router.put('/', (req, res, next) => {
 								.setPrivate_key(body.private_key)
 								.build();
 
-	if(dto.mpw) encryptedPw = key.encrypt(dto.mpw, 'base64');
-	if(dto.private_key)	encryptePK = key.encrypt(dto.private_key, 'base64');
+	if(dto.mpw) encryptedPw = key.encrypt(dto.mpw, encodeType);
+	if(dto.private_key)	encryptePK = key.encrypt(dto.private_key, encodeType);
 
 	db.iquery(sql.update(encryptedPw, encryptePK), [dto.content, dto.mid
 							, dto.type, dto.name], (err, rows) => {
@@ -150,7 +140,6 @@ function totalCount(req) {
 			if (err) {
 				return reject(err);
 			}
-			// console.log("total func: " + rows.rows[0].total);
 			resolve(rows.rows[0].total);
 
 		});
