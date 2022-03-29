@@ -45,35 +45,30 @@ class sql {
     }
     return stringQuery
   }
+
+  post () {
+    let stringQuery = "";
+    stringQuery += " INSERT INTO t_hosts ( name, content,";
+    stringQuery += " domain, os, ip, use_yn, ";
+    stringQuery += " datasource, datacenter, create_id ) ";
+    stringQuery += " VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, \'admin\' ";
+    return stringQuery
+  }
   
-  update (vname, vdomain, vcontent, vos, vip, vuse_yn, vdatasource, vdatacenter, vseq) {
+  update () {
     let stringQuery = "";
     stringQuery += " UPDATE t_hosts SET ";
     stringQuery += " update_dt = now() ";
     stringQuery += " , update_id = \'admin\' ";
-    if (vname) {
-      stringQuery += " , name = \'" + vname + "\' ";
-    }
-    stringQuery += " , domain = \'" + vdomain + "\' ";
-    if (vcontent) {
-      stringQuery += " , content = \'" + vcontent + "\' ";
-    }
-    if (vos) {
-      stringQuery += " , os = \'" + vos + "\' ";
-    }
-    if (vip) {
-      stringQuery += " , ip = \'" + vip + "\' ";
-    }
-    if (vuse_yn) {
-      stringQuery += " , use_yn = \'" + vuse_yn + "\' ";
-    }
-    if (vdatasource) {
-      stringQuery += " , datasource = \'" + vdatasource + "\' ";
-    }
-    if (vdatacenter) {
-      stringQuery += " , datacenter = \'" + datacenter + "\' ";
-    }
-    stringQuery += " WHERE hid = " + vseq + " ";
+    stringQuery += " , name = $1 ";
+    stringQuery += " , content = $2 ";
+    stringQuery += " , domain = $3 ";
+    stringQuery += " , os = $4 ";
+    stringQuery += " , ip = $5 ";
+    stringQuery += " , use_yn = $6 ";
+    stringQuery += " , datasource = $7 ";
+    stringQuery += " , datacenter = $8 ";
+    stringQuery += " WHERE hid = $9 ";
     return stringQuery
   }
   

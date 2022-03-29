@@ -68,10 +68,10 @@ router.put('/', function (req, res, next) {
 });
 
 /* DELETE adhoc template (delete) */
-router.delete('/', function (req, res, next) {
-	let vseq = req.query.seq ? addslashes(req.query.seq) : "";
+router.delete('/:seq', function (req, res, next) {
+	let seq = req.params.seq ? addslashes(req.params.seq) : "";
 
-	db.iquery(sql.delete(), [vseq], (err) => {
+	db.iquery(sql.delete(), [seq], (err) => {
 		if (err) {
 			next(err);
 		}
@@ -80,9 +80,9 @@ router.delete('/', function (req, res, next) {
 });
 
 /* GET adhoc template (SELECT ONE) */
-router.get('/o', (req, res, next) => {
-	let seq = req.query.seq ? addslashes(req.query.seq) : "";
-
+router.get('/:seq', (req, res, next) => {
+	let seq = req.params.seq ? addslashes(req.params.seq) : "";
+	
 	db.query(sql.getOneRow(), [seq], (err, rows) => {
 		if (err) {
 			next(err);
@@ -130,10 +130,8 @@ router.get('/', function (req, res, next) {
 
 function totalCount(name) {
 
-	let stringQuery = sql.totalCount(name)
-
 	return new Promise(function (resolve, reject) {
-		db.query(stringQuery, [], (err, rows) => {
+		db.query(sql.totalCount(name), [], (err, rows) => {
 			if (err) {
 				return reject(err);
 			}

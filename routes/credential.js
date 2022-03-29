@@ -66,8 +66,8 @@ router.put('/', (req, res, next) => {
 });
 
 /* DELETE credential (delete) */
-router.delete('/', (req, res, next) => {
-	let name = req.query.name ? addslashes(req.query.name) : "";
+router.delete('/:name', (req, res, next) => {
+	let name = req.params.name ? addslashes(req.params.name) : "";
 
 	db.iquery(sql.delete(), [name], (err, rows) => {
 		if (err) {
@@ -79,8 +79,8 @@ router.delete('/', (req, res, next) => {
 });
 
 /* GET Credential (SELECT ONE) */
-router.get('/o', (req, res, next) => {
-	let name = req.query.name ? addslashes(req.query.name) : "";
+router.get('/:seq', (req, res, next) => {
+	let name = req.params.name ? addslashes(req.params.name) : "";
 
 	db.iquery(sql.getOneRow(), [name], (err, rows) => {
 		if (err) {
