@@ -8,16 +8,16 @@ const addslashes = require('../db/addslashes.js');
 
 /* Post Hosts (Insert) */
 router.post('/', (req, res, next) => {
-	let vname = req.body.name ? addslashes(req.body.name) : "";
-	let vdomain = req.body.domain ? addslashes(req.body.domain) : "";
-	let vcontent = req.body.content ? addslashes(req.body.content) : "";
-	let vos = req.body.os ? addslashes(req.body.os) : "";
-	let vip = req.body.ip ? addslashes(req.body.ip) : "";
-	let vdatasource = req.body.datasource ? addslashes(req.body.datasource) : "";
-	let vdatacenter = req.body.datacenter ? addslashes(req.body.datacenter) : "";
-	let vuse_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "Y";
-	let viid = req.body.iid ? addslashes(req.body.iid) : "";
-	viid = viid.split(',');
+	let name = req.body.name ? addslashes(req.body.name) : "";
+	let domain = req.body.domain ? addslashes(req.body.domain) : "";
+	let content = req.body.content ? addslashes(req.body.content) : "";
+	let os = req.body.os ? addslashes(req.body.os) : "";
+	let ip = req.body.ip ? addslashes(req.body.ip) : "";
+	let datasource = req.body.datasource ? addslashes(req.body.datasource) : "";
+	let datacenter = req.body.datacenter ? addslashes(req.body.datacenter) : "";
+	let use_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "Y";
+	let iid = req.body.iid ? addslashes(req.body.iid) : "";
+	iid = iid.split(',');
 
 	let stringQuery = sql.post(vname, vdomain, vcontent, vos, vip, vuse_yn, vdatasource, vdatacenter)
 
