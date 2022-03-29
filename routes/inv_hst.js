@@ -16,7 +16,7 @@ router.post('/istMultiIid', (req, res, next) => {
 
 	if (viid && vhid) {
 		let stringQuery = sql.istMultiIid(viid, vhid)
-		db.iquery(stringQuery, [], (err, rows) => {
+		db.query(stringQuery, [], (err, rows) => {
 			if (err) {
 				//console.log('### Inventory-Host join table insert error : '+err);
 				res.json(db.resultMsg('500'[1], err));
@@ -48,7 +48,7 @@ router.post('/istMultiHid', (req, res, next) => {
 
 	if (viid && vhid) {
 		let stringQuery = sql.istMultiHid(viid, vhid)
-		db.iquery(stringQuery, [], (err, rows) => {
+		db.query(stringQuery, [], (err, rows) => {
 			if (err) {
 				//console.log('### Inventory-Host join table insert error : '+err);
 				res.json(db.resultMsg('500'[1], err));
@@ -84,7 +84,7 @@ router.delete('/', (req, res, next) => {
 		if (typeof vhid == 'string') {
 			let stringQuery = sql.deleteHid(vhid)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -104,7 +104,7 @@ router.delete('/', (req, res, next) => {
 		if (typeof viid == 'string') {
 			let stringQuery = sql.deleteIid(viid)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -136,7 +136,7 @@ router.get('/o', (req, res, next) => {
 		if (isNaN(vseq) === false) {
 			let stringQuery = sql.getOneRow(vseq)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}

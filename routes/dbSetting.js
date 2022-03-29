@@ -16,7 +16,7 @@ router.get('/deleteDB', (req, res, next) => {
   let stringQuery = sql.dropTable()
 
   deleteTableName.forEach((item) => {
-    db.iquery(stringQuery + item, [], (err, rows) => {
+    db.query(stringQuery + item, [], (err, rows) => {
       if (err) {
         return next(err);
         res.json(db.resultMsg('500'[0], req.body));
@@ -64,7 +64,7 @@ function createIvtTable() {
   let stringQuery = sql.invTable()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -77,7 +77,7 @@ function createIvtIndex() {
   let stringQuery = sql.invIndex()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -90,7 +90,7 @@ function createIvtHostJoin() {
   let stringQuery = sql.invHostJoin()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -103,7 +103,7 @@ function createHostTable() {
   let stringQuery = sql.hostTable()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -116,7 +116,7 @@ function createHostIndex() {
   let stringQuery = sql.hostIndex()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -129,7 +129,7 @@ function createTempTable() {
   let stringQuery = sql.tempTable()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -142,7 +142,7 @@ function createJobTable() {
   let stringQuery = sql.jobTable()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -155,7 +155,7 @@ function createJobEventTable() {
   let stringQuery = sql.jobEventTable()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -168,7 +168,7 @@ function createCredTable() {
   let stringQuery = sql.credTable()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -181,7 +181,7 @@ function createCredTable() {
 function createAdhocTable() {
   let stringQuery = sql.adhocTable()
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -195,7 +195,7 @@ function createCommonCodeTable() {
   let stringQuery = sql.commonCodeTable()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -209,7 +209,7 @@ function istCommonCodeTable() {
   let stringQuery = sql.insertCommonCode()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -223,7 +223,7 @@ function createTriggerFunc() {
   let stringQuery = sql.triggerFunc()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -237,7 +237,7 @@ function createTrigger() {
   let stringQuery = sql.trigger()
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }

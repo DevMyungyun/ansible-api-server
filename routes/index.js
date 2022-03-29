@@ -59,7 +59,7 @@ router.get('/commonCode', (req, res, next) => {
     if (typeof vinv == 'string') {
       let stringQuery = sql.commonCode(vinv)
 
-      db.iquery(stringQuery, [], (err, rows) => {
+      db.query(stringQuery, [], (err, rows) => {
         if (err) {
           return next(err);
         }
@@ -95,7 +95,7 @@ router.get('/getJoinIvt', (req, res, next) => {
     if (isNaN(vhid) === false) {
       let stringQuery = sql.getJoinInv(vhid)
 
-      db.iquery(stringQuery, [], (err, rows) => {
+      db.query(stringQuery, [], (err, rows) => {
         if (err) {
           return next(err);
         }
@@ -124,7 +124,7 @@ router.get('/chkIvnDupl', (req, res, next) => {
     if (typeof viname === 'string') {
       let stringQuery = sql.chkInvDupl(viname)
 
-      db.iquery(stringQuery, [], (err, rows) => {
+      db.query(stringQuery, [], (err, rows) => {
         if (err) {
           return next(err);
         }
@@ -152,7 +152,7 @@ router.get('/chkHstDupl', (req, res, next) => {
     if (typeof vhname == 'string') {
       let stringQuery = sql.chkHostDupl(vhname)
 
-      db.iquery(stringQuery, [], (err, rows) => {
+      db.query(stringQuery, [], (err, rows) => {
         if (err) {
           return next(err);
         }
@@ -181,7 +181,7 @@ router.get('/chkCredDupl', (req, res, next) => {
     if (typeof vcname === 'string') {
       let stringQuery = sql.chkCredDupl(vcname)
 
-      db.iquery(stringQuery, [], (err, rows) => {
+      db.query(stringQuery, [], (err, rows) => {
         if (err) {
           return next(err);
         }
@@ -210,7 +210,7 @@ router.get('/analyzedResult', (req, res, next) => {
     if (isNaN(vseq) === false) {
       let stringQuery = sql.analyzedResult(vseq)
 
-      db.iquery(stringQuery, [], (err, rows) => {
+      db.query(stringQuery, [], (err, rows) => {
         if (err) {
           return next(err);
         }

@@ -21,7 +21,7 @@ router.post('/', (req, res, next) => {
 
 	let stringQuery = sql.post(vname, vdomain, vcontent, vos, vip, vuse_yn, vdatasource, vdatacenter)
 
-	db.iquery(stringQuery, [], (err, rows) => {
+	db.query(stringQuery, [], (err, rows) => {
 		if (err) {
 			if (err.code === '23505') {
 				res.json(db.resultMsg('403'[1], req.body));
@@ -76,7 +76,7 @@ router.put('/', (req, res, next) => {
 		if (isNaN(vseq) === false) {
 			let stringQuery = sql.update(vname, vdomain, vcontent, vos, vip, vuse_yn, vdatasource, vdatacenter, vseq)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					if (err.code === '23505') {
 						res.json(db.resultMsg('403'[1], req.body));
@@ -112,7 +112,7 @@ router.delete('/', (req, res, next) => {
 		if (typeof vseq == 'string') {
 			let stringQuery = sql.delete(vseq)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -149,7 +149,7 @@ router.get('/o', (req, res, next) => {
 		if (isNaN(vseq) === false) {
 			let stringQuery = sql.getOneRow(vseq)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -187,7 +187,7 @@ router.get('/', (req, res, next) => {
 
 	let stringQuery = sql.getList(vname)
 
-	db.iquery(stringQuery, [], (err, rows) => {
+	db.query(stringQuery, [], (err, rows) => {
 		if (err) {
 			return next(err);
 		}
@@ -223,7 +223,7 @@ router.get('/connectedIvts', (req, res, next) => {
 		if (isNaN(vhid) === false) {
 			let stringQuery = sql.connectedIvts(vhid)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -265,7 +265,7 @@ router.get('/joinHid', (req, res, next) => {
 		if (isNaN(viid) === false) {
 			let stringQuery = sql.joinHid(viid)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -320,7 +320,7 @@ function getHidSeq() {
 
 	return new Promise((resolve, reject) => {
 		let stringQuery = sql.getHidSeq()
-		db.iquery(stringQuery, [], (err, rows) => {
+		db.query(stringQuery, [], (err, rows) => {
 			if (err) {
 				return reject(err);
 			}
@@ -342,7 +342,7 @@ function insertHostInv(viid, vhid) {
 		if (viid || vhid) {
 			if (isNaN(viid) === false || isNaN(vhid) === false) {
 				let stringQuery = sql.insertHostInv(viid, vhid)
-				db.iquery(stringQuery, [], (err, rows) => {
+				db.query(stringQuery, [], (err, rows) => {
 					if (err) {
 						return reject(err);
 						// res.json(db.resultMsg('403'[1], req.body));
@@ -374,7 +374,7 @@ function delInvHost(vhid) {
 		if (vhid) {
 			let stringQuery = sql.delInvHost(vhid)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return reject(err);
 				}

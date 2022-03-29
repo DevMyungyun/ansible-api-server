@@ -14,7 +14,7 @@ router.post('/', (req, res, next) => {
 
 	let stringQuery = sql.post(vname, vcontent, vuse_yn)
 
-	db.iquery(stringQuery, [], (err, rows) => {
+	db.query(stringQuery, [], (err, rows) => {
 		if (err) {
 			if (err.code === '23505') {
 				res.json(db.resultMsg('403'[1], req.body));
@@ -64,7 +64,7 @@ router.put('/', (req, res, next) => {
 		if (isNaN(vseq) === false) {
 			let stringQuery = sql.update(vname, vcontent, vuse_yn, vseq)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					if (err.code === '23505') {
 						res.json(db.resultMsg('403'[1], req.body));
@@ -120,7 +120,7 @@ function deleteIvt(req, res, viid, chkIid) {
 	return new Promise((resolve, reject) => {
 		if (typeof viid == 'object') {
 			let stringQuery = sql.delete(viid)
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -144,7 +144,7 @@ function deleteIvt(req, res, viid, chkIid) {
 		//         if (item) {
 		//     		if (typeof item === 'string') {
 		//                 let stringQuery = sql.delete(item)
-		//     			db.iquery(stringQuery, [], (err, rows) => {
+		//     			db.query(stringQuery, [], (err, rows) => {
 		//     				if (err) {
 		//     					return next(err);
 		//     				}
@@ -192,7 +192,7 @@ router.get('/o', (req, res, next) => {
 		if (isNaN(vseq) === false) {
 			let stringQuery = sql.getOneRow(vseq)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -222,7 +222,7 @@ router.get('/detailCHstList', (req, res, next) => {
 		if (isNaN(vseq) === false) {
 			let stringQuery = sql.detailCHstList(vseq)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -276,7 +276,7 @@ router.get('/', (req, res, next) => {
 
 	let stringQuery = sql.getList(vname)
 
-	db.iquery(stringQuery, [], (err, rows) => {
+	db.query(stringQuery, [], (err, rows) => {
 		if (err) {
 			return next(err);
 		}
@@ -310,7 +310,7 @@ router.get('/joinIid', (req, res, next) => {
 		if (isNaN(vhid) === false) {
 			let stringQuery = sql.joinIid(vhid)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -354,7 +354,7 @@ router.get('/connectedHosts', (req, res, next) => {
 		if (isNaN(viid) === false) {
 			let stringQuery = sql.connectedHosts(viid)
 
-			let imsi = db.iquery(stringQuery, [], (err, rows) => {
+			let imsi = db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -407,7 +407,7 @@ function chkConnectedHost(viid) {
 	let stringQuery = sql.chkConnectedHost(viid)
 
 	return new Promise((resolve, reject) => {
-		db.iquery(stringQuery, [], (err, rows) => {
+		db.query(stringQuery, [], (err, rows) => {
 			if (err) {
 				return reject(err);
 			}
@@ -420,7 +420,7 @@ function getIidSeq() {
 
 	return new Promise((resolve, reject) => {
 		let stringQuery = sql.getIidSeq()
-		db.iquery(stringQuery, [], (err, rows) => {
+		db.query(stringQuery, [], (err, rows) => {
 			if (err) {
 				return reject(err);
 			}
@@ -445,7 +445,7 @@ function insertInvHst(viid, vhid, req, res) {
 			if (isNaN(viid) === false && typeof vhid == 'object') {
 				let stringQuery = sql.insertInvHst(viid, vhid)
 
-				db.iquery(stringQuery, [], (err, rows) => {
+				db.query(stringQuery, [], (err, rows) => {
 					if (err) {
 						// console.log(err);
 						return reject(err);
@@ -483,7 +483,7 @@ function delInvHst(viid) {
 				//     stringQuery += " AND iid = " + viid + " ";
 				// }
 
-				db.iquery(stringQuery, [], (err, rows) => {
+				db.query(stringQuery, [], (err, rows) => {
 					if (err) {
 						return reject(err);
 					}

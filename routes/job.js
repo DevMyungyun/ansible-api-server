@@ -46,7 +46,7 @@ router.get('/o', (req, res, next) => {
 		if (isNaN(vseq) === false) {
 			let stringQuery = sql.getOneRow(vseq)
 
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -93,7 +93,7 @@ router.get('/', (req, res, next) => {
 	let stringQuery = sql.getList(vtname, viname, vstatus, vpageSize, vstart)
 
 
-	let imsi = db.iquery(stringQuery, [], (err, rows) => {
+	let imsi = db.query(stringQuery, [], (err, rows) => {
 		if (err) {
 			return next(err);
 		}

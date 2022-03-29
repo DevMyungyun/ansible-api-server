@@ -28,8 +28,7 @@ router.post('/', (req, res, next) => {
 	encryptedPw = key.encrypt(dto.mpw, encodeType);
 	encryptePK = key.encrypt(dto.private_key, encodeType);
 
-	console.log(dto);
-	db.iquery(sql.post(), [dto.name, dto.content, dto.mid
+	db.query(sql.post(), [dto.name, dto.content, dto.mid
 							, encryptedPw, encryptePK, dto.type], (err, rows) => {
 		if (err) {
 			return next(err);
@@ -56,7 +55,7 @@ router.put('/', (req, res, next) => {
 	if(dto.mpw) encryptedPw = key.encrypt(dto.mpw, encodeType);
 	if(dto.private_key)	encryptePK = key.encrypt(dto.private_key, encodeType);
 
-	db.iquery(sql.update(encryptedPw, encryptePK), [dto.content, dto.mid
+	db.query(sql.update(encryptedPw, encryptePK), [dto.content, dto.mid
 							, dto.type, dto.name], (err, rows) => {
 		if (err) {
 			return next(err);
@@ -67,9 +66,9 @@ router.put('/', (req, res, next) => {
 
 /* DELETE credential (delete) */
 router.delete('/:name', (req, res, next) => {
-	let name = req.params.name ? addslashes(req.params.name) : "";
+	let name = req.params.name ? addslashes(req.params.name) :
 
-	db.iquery(sql.delete(), [name], (err, rows) => {
+	db.query(sql.delete(), [name], (err, rows) => {
 		if (err) {
 			return next(err);
 		}
@@ -80,9 +79,9 @@ router.delete('/:name', (req, res, next) => {
 
 /* GET Credential (SELECT ONE) */
 router.get('/:seq', (req, res, next) => {
-	let name = req.params.name ? addslashes(req.params.name) : "";
+	let name = req.params.name ? addslashes(req.params.name) :
 
-	db.iquery(sql.getOneRow(), [name], (err, rows) => {
+	db.query(sql.getOneRow(), [name], (err, rows) => {
 		if (err) {
 			return next(err);
 		}
@@ -105,9 +104,9 @@ router.get('/', (req, res, next) => {
 	if (pageSize == "" || pageSize < 1) {
 		pageSize = 15;
 	}
-	let start = (page - 1) * pageSize;
+	let start = (page - 1) * pageS
 
-	db.iquery(sql.getList(name), [pageSize, start], (err, rows) => {
+	db.query(sql.getList(name), [pageSize, start], (err, rows) => {
 		if (err) {
 			return next(err);
 		}

@@ -289,7 +289,7 @@ router.get('/o', (req, res, next) => {
     if (isNaN(vseq) === false) {
       let stringQuery = sql.getOneRow(vseq)
 
-      db.iquery(stringQuery, [], (err, rows) => {
+      db.query(stringQuery, [], (err, rows) => {
         if (err) {
           return next(err);
         }
@@ -327,7 +327,7 @@ router.get('/', (req, res, next) => {
 
   let stringQuery = sql.getList(vpageSize, vstart)
 
-  let imsi = db.iquery(stringQuery, [], (err, rows) => {
+  let imsi = db.query(stringQuery, [], (err, rows) => {
     if (err) {
       return next(err);
     }
@@ -390,7 +390,7 @@ function selectAHTemplate(vtid) {
   let stringQuery = sql.selectAHTempQuery(vtid)
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -404,7 +404,7 @@ function selectCred(vcname) {
   let stringQuery = sql.selectCredQuery(vcname)
 
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -496,7 +496,7 @@ function selectJid() {
 function insertJob(vdata) {
   let stringQuery = sql.insertJobQuery(vdata)
   return new Promise((resolve, reject) => {
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -511,7 +511,7 @@ function insertJob(vdata) {
 function getJid() {
   return new Promise((resolve, reject) => {
     let stringQuery = sql.getJidQuery()
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -525,7 +525,7 @@ function insertJobevent(data, vjid, vpid, vcheck) {
 
   return new Promise((resolve, reject) => {
     let stringQuery = sql.insertJobeventQuery(vjid, vpid, vcheck, data)
-    db.iquery(stringQuery, [], (err, rows) => {
+    db.query(stringQuery, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -537,7 +537,7 @@ function insertJobevent(data, vjid, vpid, vcheck) {
 function updateJobevent(vcode, vjid) {
   let stringQuery = sql.updateJobeventQuery(vcode, vjid)
 
-  db.iquery(stringQuery, [], (err, rows) => {
+  db.query(stringQuery, [], (err, rows) => {
     if (err) {
       return reject(err);
     }

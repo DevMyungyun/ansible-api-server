@@ -4,7 +4,7 @@ const sql = require('../db/sql/adhocSql.js');
 describe('DB Connect Test', function() {
     it('Query', function (done) {
         
-		db.iquery(sql.getOneRow, [1], (err, rows) => {
+		db.query(sql.getOneRow, [1], (err, rows) => {
 			if (err) {
 				console.error(err);
 			}

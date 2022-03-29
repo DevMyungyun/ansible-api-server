@@ -26,7 +26,7 @@ router.post('/', (req, res, next) => {
 	// console.log('#####addslashes(req.body.variables) : ##' + addslashes(req.body.variables));
 
 	let stringQuery = sql.post(vname, vcontent, viid, viname, vcname, vplaybook, vforks, vlimits, vverb, vvariables, vuse_yn)
-	db.iquery(stringQuery, [], (err, rows) => {
+	db.query(stringQuery, [], (err, rows) => {
 		if (err) {
 			return next(err);
 		}
@@ -59,7 +59,7 @@ router.put('/', (req, res, next) => {
 	if (vseq) {
 		if (isNaN(vseq) === false) {
 			let stringQuery = sql.update(vname, vcontent, viid, viname, vcname, vplaybook, vforks, vlimits, vverb, vvariables, vuse_yn, vseq)
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -88,7 +88,7 @@ router.delete('/', (req, res, next) => {
 	if (vseq) {
 		if (typeof vseq === 'string') {
 			let stringQuery = sql.delete(vseq)
-			db.iquery(stringQuery, [], (err, rows) => {
+			db.query(stringQuery, [], (err, rows) => {
 				if (err) {
 					return next(err);
 				}
@@ -155,7 +155,7 @@ router.get('/', (req, res, next) => {
 	let vstart = (vpage - 1) * vpageSize;
 
 	let stringQuery = sql.getList(vname)
-	let imsi = db.iquery(stringQuery, [], (err, rows) => {
+	let imsi = db.query(stringQuery, [], (err, rows) => {
 		if (err) {
 			return next(err);
 		}

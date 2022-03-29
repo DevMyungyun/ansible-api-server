@@ -23,7 +23,7 @@ router.post('/', function (req, res) {
 								.setUse_yn(body.use_yn ? addslashes(body.use_yn) : "Y")
                                 .build();
 
-	db.iquery(sql.post(), [dto.name, dto.content, dto.iid
+	db.query(sql.post(), [dto.name, dto.content, dto.iid
 							, dto.iname, dto.cname, dto.module
 							, dto.arg, dto.forks, dto.limits
 							, dto.verb, dto.variables, dto.use_yn], 
@@ -55,7 +55,7 @@ router.put('/', function (req, res, next) {
 								.setUse_yn(body.use_yn ? addslashes(body.use_yn) : "Y")
 								.build();
 
-	db.iquery(sql.update(), [dto.name, dto.content, dto.iid
+	db.query(sql.update(), [dto.name, dto.content, dto.iid
 							, dto.iname, dto.cname, dto.module
 							, dto.arg, dto.forks, dto.limits
 							, dto.verb, dto.variables, dto.use_yn, seq], (err, rows) => {
@@ -71,7 +71,7 @@ router.put('/', function (req, res, next) {
 router.delete('/:seq', function (req, res, next) {
 	let seq = req.params.seq ? addslashes(req.params.seq) : "";
 
-	db.iquery(sql.delete(), [seq], (err) => {
+	db.query(sql.delete(), [seq], (err) => {
 		if (err) {
 			next(err);
 		}
@@ -106,7 +106,7 @@ router.get('/', function (req, res, next) {
 	}
 	const start = (page - 1) * pageSize;
 
-	db.iquery(sql.getList(name), [pageSize, start], (err, rows) => {
+	db.query(sql.getList(name), [pageSize, start], (err, rows) => {
 		if (err) {
 			next(err);
 		}
