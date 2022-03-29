@@ -2,6 +2,7 @@ const {
 	Pool
 } = require('pg');
 const conf = require('../config.js');
+const errorMsg = require('../error/errorMessage.json');
 
 const pool = new Pool({
 	host: conf.dbserver,
@@ -13,26 +14,6 @@ const pool = new Pool({
 	idleTimeoutMillis: 30000,
 	connectionTimeoutMillis: 3000,
 });
-
-const errorMsg = {
-	"200": {
-		0: "success",
-		1: "success create",
-		2: "there is connected hosts",
-		3: "process kill",
-	},
-	"403": {
-		0: "check a input data",
-		1: "duplicate key value",	
-	},	
-	"500": {
-		0: "fail create",
-		1: "database Error",
-		2: "data not found in database"
-	},
-	"900": "not supported"
-};
-
 class db {
 	query(queryString, params, callback) {
 		const start = Date.now();

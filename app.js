@@ -8,6 +8,8 @@ const logger = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
 
+const morgan = require('morgan');
+
 const indexRouter = require('./routes/index');
 const inventoryRouter = require('./routes/inventory');
 const invHstRouter = require('./routes/inv_hst');
@@ -18,7 +20,6 @@ const jobRouter = require('./routes/job');
 const credRouter = require('./routes/credential');
 const adhocRouter = require('./routes/adhoc');
 const dbSettingRouter = require('./routes/dbSetting');
-
 
 const app = express();
 
@@ -32,7 +33,8 @@ app.disable('x-powered-by');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
+// app.use(logger('dev'));
+app.use(morgan("combined"));
 app.use(express.json());
 app.use(express.urlencoded({
   extended: false
@@ -51,7 +53,8 @@ app.use('/v1/adhoc', adhocRouter);
 app.use('/v1/dbSetting', dbSettingRouter);
 
 // catch 404 and forward to error handler
-app.use((req, res, next) => {
+app.use((err, req, res, next) => {
+  console.error(err);
   next(createError(404));
 });
 

@@ -86,7 +86,7 @@ router.get('/:seq', (req, res, next) => {
 			return next(err);
 		}
 		
-		res.json(db.resultMsg('200'[0], rows.rows[0]));
+		res.json(db.resultMsg('200'[0], rows.rows));
 
 	});
 });

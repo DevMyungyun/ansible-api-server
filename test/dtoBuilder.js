@@ -1,18 +1,21 @@
-const AdhocBuilder = require('../dto/adhocBuilder')
+const CredBuilder = require('../dto/credBuilder')
 
 describe('Builder Test', function() {
-    it('adhocBuilder build', function (done) {
-        const adhocBuilder = new AdhocBuilder().setVname('hello1')
-                                .setVcontent('hello2')
+    it('credBuilder build', function (done) {
+        const credBuilder = new CredBuilder().setName('test')
+                                .setContent('test...')
+                                .setMpw('pw')
+                                .setMid('mid')
+                                .setType('vmware')
+                                .setPrivate_key('privatekeeeeey')
                                 .build();
-        console.log(adhocBuilder);
+        console.log(credBuilder);
         done();
     })
 
-    it('adhocBuilder error', function (done) {
-        const adhocBuilder = new AdhocBuilder().setVname('hello1')
+    it('credBuilder error', function (done) {
+        const credBuilder = new CredBuilder().setName('hello1')
                                                 .build();
-        // console.log(adhocBuilder.vcontent);
         done();
     })
 })

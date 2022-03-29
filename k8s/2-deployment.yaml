@@ -23,6 +23,8 @@ spec:
           env:
             - name: TZ
               value: Asia/Seoul
+            - name: NODE_ENV
+              value: developement
           ports:
             - containerPort: 8888
           command:

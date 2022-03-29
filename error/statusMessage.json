@@ -1,0 +1,18 @@
+{
+	"200": {
+		"0": "success",
+		"1": "success create",
+		"2": "there is connected hosts",
+		"3": "process kill"
+	},
+	"403": {
+		"0": "check a input data",
+		"1": "duplicate key value"
+	},	
+	"500": {
+		"0": "fail create",
+		"1": "database Error",
+		"2": "data not found in database"
+	},
+	"900": "not supported"
+}
