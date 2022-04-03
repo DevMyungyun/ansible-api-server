@@ -33,7 +33,6 @@ app.disable('x-powered-by');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// app.use(logger('dev'));
 app.use(morgan("combined"));
 app.use(express.json());
 app.use(express.urlencoded({
@@ -52,21 +51,23 @@ app.use('/v1/cred', credRouter);
 app.use('/v1/adhoc', adhocRouter);
 app.use('/v1/dbSetting', dbSettingRouter);
 
-// catch 404 and forward to error handler
-app.use((err, req, res, next) => {
-  console.error(err);
+// 404
+app.use(function(req, res, next) {
   next(createError(404));
-});
-
+})
 // error handler
 app.use((err, req, res, next) => {
-  // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = req.app.get('env') === 'developement' ? err : {};
 
+  console.error(err);
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status || 500).json(
+    {"code": err.code, "message": err.message}
+  );
+  // res.render('error', {
+  //   message: err.status
+  // });
 });
 
 module.exports = app;

@@ -32,7 +32,7 @@ router.post('/', function (req, res) {
 			next(err);
 		}
 
-		return res.json(db.resultMsg('200'[1], req.body));
+		return res.json(db.resultMsg('a001', req.body));
 	});
 });
 
@@ -62,7 +62,7 @@ router.put('/', function (req, res, next) {
 		if (err) {
 			next(err);
 		}
-		return res.json(db.resultMsg('200'[1], req.body));
+		return res.json(db.resultMsg('a001', req.body));
 	});
 
 });
@@ -75,24 +75,25 @@ router.delete('/:seq', function (req, res, next) {
 		if (err) {
 			next(err);
 		}
-		return res.json(db.resultMsg('200'[1], req.body));
+		return res.json(db.resultMsg('a001', req.body));
 	});	
 });
 
 /* GET adhoc template (SELECT ONE) */
 router.get('/:seq', (req, res, next) => {
 	let seq = req.params.seq ? addslashes(req.params.seq) : "";
+	let code = "a001";
 	
 	db.query(sql.getOneRow(), [seq], (err, rows) => {
-		if (err) {
-			next(err);
-		}
-		return res.json(db.resultMsg('200'[0], rows.rows));
+		if (err) next(err);
+		if (rows.rowCount === 0 ) code = "a003"
+		return res.json(db.resultMsg(code, rows.rows));
 	});
 });
 
 /* GET adhoc template listing. */
 router.get('/', function (req, res, next) {
+	let code = "a001";
 	let data = {};
 	let page = req.query.page ? addslashes(req.query.page) : "";
 	let pageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
@@ -107,9 +108,8 @@ router.get('/', function (req, res, next) {
 	const start = (page - 1) * pageSize;
 
 	db.query(sql.getList(name), [pageSize, start], (err, rows) => {
-		if (err) {
-			next(err);
-		}
+		if (err) next(err);
+		if (rows.rowCount === 0) code ="a003"
 
 		totalCount(name).then(function (result) {
 			data['rowCount'] = rows.rowCount;
@@ -118,10 +118,11 @@ router.get('/', function (req, res, next) {
 			data['pageSize'] = pageSize;
 			data['list'] = rows.rows;
 
-			res.json(db.resultMsg('200'[0], data));
+			res.json(db.resultMsg(code, data));
 		}).catch(function (err) {
 			if (err) {
 				console.error(err);
+				next(err);
 			}
 		});
 	});

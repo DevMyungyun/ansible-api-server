@@ -2,7 +2,7 @@ const {
 	Pool
 } = require('pg');
 const conf = require('../config.js');
-const errorMsg = require('../error/errorMessage.json');
+const statusMessage = require('../error/statusMessage.json');
 
 const pool = new Pool({
 	host: conf.dbserver,
@@ -22,19 +22,19 @@ class db {
 			const duration = Date.now() - start;
 			console.log('[' + curDate + '] : ', {
 				queryString,
-				duration,
-				rows: rows
+				duration
 			});
+			
 			callback(err, rows);
 		})
 	}
 
-	resultMsg (vcode, vdata) {
-		var vresult = {};
-		vresult['code'] = vcode;
-		vresult['statusMsg'] = errorMsg[vcode];
-		vresult['data'] = vdata;
-		return vresult;
+	resultMsg (code, data) {
+		var result = {};	
+		result['code'] = code;
+		result['statusMsg'] = statusMessage[code];
+		result['data'] = data;
+		return result;
 	}
 }
 

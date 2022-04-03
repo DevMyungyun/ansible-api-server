@@ -34,7 +34,7 @@ router.post('/', (req, res, next) => {
 			return next(err);
 		}
 		delete body.mpw;
-		res.json(db.resultMsg('200'[0], body));
+		res.json(db.resultMsg('a001', body));
 	});
 });
 
@@ -60,7 +60,7 @@ router.put('/', (req, res, next) => {
 		if (err) {
 			return next(err);
 		}
-		res.json(db.resultMsg('200'[0], req.body));
+		res.json(db.resultMsg('a001', req.body));
 	});
 });
 
@@ -72,27 +72,28 @@ router.delete('/:name', (req, res, next) => {
 		if (err) {
 			return next(err);
 		}
-		res.json(db.resultMsg('200'[0], req.body));
+		res.json(db.resultMsg('a001', req.body));
 	});
 
 });
 
 /* GET Credential (SELECT ONE) */
 router.get('/:seq', (req, res, next) => {
+	let code = 'a001';
 	let name = req.params.name ? addslashes(req.params.name) :
 
 	db.query(sql.getOneRow(), [name], (err, rows) => {
-		if (err) {
-			return next(err);
-		}
+		if (err) return next(err);
+		if (rows.rowCount === 0 ) code = 'a003'
 		
-		res.json(db.resultMsg('200'[0], rows.rows));
+		res.json(db.resultMsg(code, rows.rows));
 
 	});
 });
 
 /* GET Credential listing. */
 router.get('/', (req, res, next) => {
+	let code = 'a001';
 	let data = {};
 	let page = req.query.page ? addslashes(req.query.page) : "";
 	let pageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
@@ -107,9 +108,8 @@ router.get('/', (req, res, next) => {
 	let start = (page - 1) * pageS
 
 	db.query(sql.getList(name), [pageSize, start], (err, rows) => {
-		if (err) {
-			return next(err);
-		}
+		if (err) return next(err);
+		if (rows.rowCount === 0 ) code = 'a003'
 
 		totalCount(req).then((result) => {
 			data['rowCount'] = rows.rowCount;
@@ -118,7 +118,7 @@ router.get('/', (req, res, next) => {
 			data['pageSize'] = pageSize;
 			data['list'] = rows.rows;
 
-			res.json(db.resultMsg('200'[0], data));
+			res.json(db.resultMsg(code, data));
 		}).catch((err) => {
 			if (err) {
 				console.error(err);
