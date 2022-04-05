@@ -6,8 +6,7 @@ class HostBuilder {
                 ip, 
                 datasource,
                 datacenter,
-                use_yn,
-                iid)   {
+                use_yn,)   {
         this.name       = name;
         this.content    = content;
         this.domain     = domain;
@@ -16,7 +15,6 @@ class HostBuilder {
         this.datasource = datasource;
         this.datacenter = datacenter;
         this.use_yn     = use_yn;
-        this.iid        = iid;
     }
 
     setName        (name) {
@@ -51,10 +49,6 @@ class HostBuilder {
         this.use_yn = use_yn;
         return this;
     }
-    setIid       (iid) {
-        this.iid = iid;
-        return this;
-    }
     
     build() {
         if(!('name' in this) || typeof this.name === 'undefined') {
@@ -81,18 +75,17 @@ class HostBuilder {
         if(!('use_yn' in this) || typeof this.use_yn === 'undefined') {
             throw new Error("There is no use_yn parameter...")
         }
-        if(!('iid' in this) || typeof this.iid === 'undefined') {
-            throw new Error("There is no iid parameter...")
-        }
 
-        return new CredBuilder(this.name,
+        return new HostBuilder(this.name,
                             this.content,
-                            this.mid,
-                            this.mpw,
-                            this.private_key,
-                            this.type)
+                            this.domain,
+                            this.os,
+                            this.ip,
+                            this.datasource,
+                            this.datacenter,
+                            this.use_yn)
     }
 
 }
 
-module.exports = CredBuilder;
+module.exports = HostBuilder;

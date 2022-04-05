@@ -1,52 +1,52 @@
 class sql {
 
-  commonCode (vinv) {
+  commonCode () {
     let stringQuery = "";
     stringQuery += " SELECT code_name ";
     stringQuery += " FROM  t_codes ";
-    stringQuery += " WHERE cinv = \'" + vinv + "\' ";
+    stringQuery += " WHERE cinv = $1 ";
     return stringQuery
   };
   
-  getJoinInv  (vhid) {
+  getJoinInv  () {
     let stringQuery = "";
     stringQuery += " select i.iid, i.name ";
     stringQuery += " from t_inventory i, t_ivt_hst ih ";
     stringQuery += " where i.iid = ih.iid ";
-    stringQuery += " and hid = " + vhid + " ";
+    stringQuery += " and hid = $1 ";
     stringQuery += " ORDER BY iid ASC ";
     return stringQuery
   };
   
-  chkInvDupl (viname) {
+  chkInvDupl () {
     let stringQuery = "";
     stringQuery += " select name ";
     stringQuery += " from t_inventory ";
-    stringQuery += " where name ilike \'" + viname + "\' ";
+    stringQuery += " where name ilike $1 ";
     return stringQuery
   };
   
-  chkHostDupl (vhname) {
+  chkHostDupl () {
     let stringQuery = "";
     stringQuery += " select name ";
     stringQuery += " from t_hosts ";
-    stringQuery += " where name ilike \'" + vhname + "\' ";
+    stringQuery += " where name ilike $1 ";
     return stringQuery
   };
   
-  chkCredDupl (vcname) {
+  chkCredDupl () {
     let stringQuery = "";
     stringQuery += " select name ";
     stringQuery += " from t_credentials ";
-    stringQuery += " where name ilike \'" + vcname + "\' ";
+    stringQuery += " where name ilike $1 ";
     return stringQuery
   };
   
-  analyzedResult (vseq) {
+  analyzedResult () {
     let stringQuery = "";
     stringQuery += " SELECT eid, jid, create_dt, stdout ";
     stringQuery += " FROM t_jobevents ";
-    stringQuery += " WHERE jid = " + vseq + " ";
+    stringQuery += " WHERE jid = $1 ";
     stringQuery += "  ";
     return stringQuery
   };

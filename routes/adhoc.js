@@ -59,9 +59,7 @@ router.put('/', function (req, res, next) {
 							, dto.iname, dto.cname, dto.module
 							, dto.arg, dto.forks, dto.limits
 							, dto.verb, dto.variables, dto.use_yn, seq], (err, rows) => {
-		if (err) {
-			next(err);
-		}
+		if (err) next(err);
 		return res.json(db.resultMsg('a001', req.body));
 	});
 

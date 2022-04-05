@@ -1,16 +1,16 @@
 class sql {
-	post (viid, viname, vtid, vtname) {
+	post () {
 		let stringQuery = "";
 		stringQuery += " INSERT INTO t_jobs ( iid, iname, tid, tname, status, start_dt ) ";
-		stringQuery += " VALUES ( " + viid + ", \'" + viname + "\', " + vtid + ", \'" + vtname + "\', 'P', now())";
+		stringQuery += " VALUES ( $1, $2, $3, $4, 'P', now())";
 		return stringQuery
 	}
 	
-	getOneRow (vseq) {
+	getOneRow () {
 		let stringQuery = "";
 		stringQuery += " SELECT jid, iid, iname, tid, tname, status, forks, limits, verb, variables, chk_temp, to_char(start_dt, \'yyyy.mm.dd hh24:mi:ss\') AS start_dt , to_char(end_dt, \'yyyy.mm.dd hh24:mi:ss\') AS end_dt ";
 		stringQuery += " FROM t_jobs ";
-		stringQuery += " WHERE jid = " + vseq + " ";
+		stringQuery += " WHERE jid = $1 ";
 		return stringQuery
 	}
 	

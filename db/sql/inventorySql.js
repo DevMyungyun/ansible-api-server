@@ -110,24 +110,6 @@ class sql {
     stringQuery += " SELECT NEXTVAL('t_inventory_iid_seq'); ";
     return stringQuery
   }
-  
-  insertInvHst (viid, vhid) {
-    let stringQuery = "";
-    stringQuery += " INSERT INTO t_Ivt_hst ( iid, hid ) ";
-    stringQuery += " VALUES ";
-    stringQuery += " ( " + viid + ", " + vhid[0] + " ) ";
-    for (let i = 1; i < vhid.length; i++) {
-      stringQuery += " , ( " + viid + ", " + vhid[i] + " ) ";
-    }
-    return stringQuery
-  }
-  
-  delInvHst (viid) {
-    let stringQuery = "";
-    stringQuery += " DELETE FROM t_Ivt_hst ";
-    stringQuery += " WHERE iid IN ( " + viid + " ) ";
-    return stringQuery
-  }
 
 }
 

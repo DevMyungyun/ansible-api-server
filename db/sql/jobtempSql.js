@@ -1,62 +1,43 @@
 class sql {
-
-  post (vname, vcontent, viid, viname, vcname, vplaybook, vforks, vlimits, vverb, vvariables, vuse_yn) {
+  post () {
     let stringQuery = "";
     stringQuery += " INSERT INTO t_jobtemps ( name, content, iid, iname, cname, playbook, forks, limits, verb, variables, use_yn, create_id) ";
-    stringQuery += " VALUES (  \'" + vname + "\', \'" + vcontent + "\', " + viid + ", \'" + viname + "\', \'" + vcname + "\', \'" + vplaybook + "\', " + vforks + ", \'" + vlimits + "\', " + vverb + ", \'" + vvariables + "\', \'" + vuse_yn + "\', \'admin\') ";
+    stringQuery += " VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, \'admin\') ";
     return stringQuery
   }
-  
-  update (vname, vcontent, viid, viname, vcname, vplaybook, vforks, vlimits, vverb, vvariables, vuse_yn, vseq) {
+
+  update () {
     let stringQuery = "";
     stringQuery += " UPDATE t_jobtemps SET ";
     stringQuery += " update_dt = now() ";
     stringQuery += " , update_id = \'admin\' ";
-    if (vname) {
-      stringQuery += " , name = \'" + vname + "\' ";
-    }
-    if (vcontent) {
-      stringQuery += " , content = \'" + vcontent + "\' ";
-    }
-    if (viid) {
-      stringQuery += " , iid = " + viid + " ";
-    }
-    if (viname) {
-      stringQuery += " , iname = \'" + viname + "\' ";
-    }
-    if (vcname) {
-      stringQuery += " , cname = \'" + vcname + "\' ";
-    }
-    if (vplaybook) {
-      stringQuery += " , playbook = \'" + vplaybook + "\' ";
-    }
-    if (vforks) {
-      stringQuery += " , forks = " + vforks + " ";
-    }
-    stringQuery += " , limits = \'" + vlimits + "\' ";
-    if (vverb) {
-      stringQuery += " , verb = " + vverb + " ";
-    }
-    stringQuery += " , variables = \'" + vvariables + "\' ";
-    if (vuse_yn) {
-      stringQuery += " , use_yn = \'" + vuse_yn + "\' ";
-    }
-    stringQuery += " WHERE tid = " + vseq + " ";
+    stringQuery += " , name = $1 ";
+    stringQuery += " , content = $2 ";
+    stringQuery += " , iid = $3 ";
+    stringQuery += " , iname = $4 ";
+    stringQuery += " , cname = $5 ";
+    stringQuery += " , playbook = $6 ";
+    stringQuery += " , forks = $7 ";
+    stringQuery += " , limits = $8 ";
+    stringQuery += " , verb = $9 ";
+    stringQuery += " , variables = $10 ";
+    stringQuery += " , use_yn = $11 ";
+    stringQuery += " WHERE tid = $12 ";
     return stringQuery
   }
-  
-  delete (vseq) {
+
+  delete () {
     let stringQuery = "";
     stringQuery += " DELETE FROM t_jobtemps ";
-    stringQuery += " WHERE tid  In ( " + vseq + " ) ";
+    stringQuery += " WHERE tid  In ( $1 ) ";
     return stringQuery
   }
   
-  getOneRow (vseq) {
+  getOneRow () {
     let stringQuery = "";
     stringQuery += " SELECT tid, name, content, iid, iname, cname, playbook, forks, limits, verb, variables, use_yn, create_dt, create_id, update_dt, update_id ";
     stringQuery += " FROM  t_jobtemps ";
-    stringQuery += " WHERE tid = " + vseq + " ";
+    stringQuery += " WHERE tid = $1 ";
     return stringQuery
   }
   
@@ -68,7 +49,7 @@ class sql {
       stringQuery += " WHERE name like \'%" + vname + "%\' ";
     }
     stringQuery += " ORDER BY tid DESC ";
-    // stringQuery += " LIMIT " + vpageSize + " OFFSET " + vstart;
+    stringQuery += " LIMIT $1 OFFSET $2 ";
     return stringQuery
   }
   

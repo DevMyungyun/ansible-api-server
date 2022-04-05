@@ -1,57 +1,10 @@
 class sql {
-
-  post (vname, vdomain, vcontent, vos, vip, vuse_yn, vdatasource, vdatacenter) {
-    let stringQuery = "";
-    stringQuery += " INSERT INTO t_hosts ( name,  domain,";
-    stringQuery += " content, os, ip, use_yn, create_id,  ";
-    stringQuery += " datasource, datacenter ) VALUES ( ";
-    stringQuery += "\'" + vname + "\', ";
-    if (vdomain == null || vdomain == '') {
-      vdomain = null;
-      stringQuery += " " + vdomain + ", ";
-    } else {
-      stringQuery += "\'" + vdomain + "\', ";
-    }
-    if (vcontent == null || vdomain == '') {
-      vcontent = null;
-      stringQuery += " " + vcontent + ", ";
-    } else {
-      stringQuery += " \'" + vcontent + "\',  ";
-    }
-    if (vos == null || vos == '') {
-      vos = null;
-      stringQuery += " " + vos + ", ";
-    } else {
-      stringQuery += " \'" + vos + "\', ";
-    }
-    if (vip == null || vip == '') {
-      vip = null;
-      stringQuery += " " + vip + ", ";
-    } else {
-      stringQuery += " \'" + vip + "\', ";
-    }
-    stringQuery += " \'" + vuse_yn + "\', \'admin\', ";
-    if (vdatasource == null || vdatasource == '') {
-      vdatasource = null;
-      stringQuery += " " + vdatasource + ", ";
-    } else {
-      stringQuery += " \'" + vdatasource + "\', ";
-    }
-    if (vdatacenter == null || vdatacenter == '') {
-      vdatacenter = null;
-      stringQuery += " " + vdatacenter + " ) ";
-    } else {
-      stringQuery += " \'" + vdatacenter + "\')";
-    }
-    return stringQuery
-  }
-
   post () {
     let stringQuery = "";
     stringQuery += " INSERT INTO t_hosts ( name, content,";
     stringQuery += " domain, os, ip, use_yn, ";
     stringQuery += " datasource, datacenter, create_id ) ";
-    stringQuery += " VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, \'admin\' ";
+    stringQuery += " VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, \'admin\' ) ";
     return stringQuery
   }
   
@@ -72,56 +25,58 @@ class sql {
     return stringQuery
   }
   
-  delete (vseq) {
+  delete () {
     let stringQuery = "";
     stringQuery += " DELETE FROM t_hosts ";
-    stringQuery += " WHERE hid IN ( " + vseq + " ) ";
+    stringQuery += " WHERE hid IN ( $1 ) ";
     return stringQuery
   }
   
-  getOneRow (vseq) {
+  getOneRow () {
     let stringQuery = "";
     stringQuery += " SELECT hid, name, content, domain, ip, os, use_yn, create_dt, create_id, update_dt, update_id ";
     stringQuery += " FROM t_hosts ";
-    stringQuery += " WHERE hid = " + vseq + " ";
+    stringQuery += " WHERE hid = $1 ";
     return stringQuery
   }
   
-  getList (vname) {
+  getList (name) {
     let stringQuery = "";
     stringQuery += " SELECT hid, name, domain, os, ip, use_yn, to_char(create_dt, \'yyyy-mm-dd hh24:mi:ss\') as create_dt, create_id, to_char(update_dt, \'yyyy-mm-dd hh24:mi:ss\') as update_dt, update_id ";
     stringQuery += " FROM t_hosts  ";
-    if (vname.length > 1) {
-      stringQuery += " WHERE name like \'%" + vname + "%\' ";
+    if (name.length > 1) {
+      stringQuery += " WHERE name like \'%" + name + "%\' ";
     }
     stringQuery += " ORDER BY name ASC ";
-    // stringQuery += " LIMIT " + vpageSize + " OFFSET " + vstart;
+    stringQuery += " LIMIT $1 OFFSET $2";
     return stringQuery
   }
   
-  connectedIvts (vhid) {
+  joinedIventory () {
     let stringQuery = "";
     stringQuery += " SELECT i.iid as iid, i.name, i.content, i.total_hosts, i.use_yn, to_char(i.create_dt, \'yyyy-mm-dd hh24:mi:ss\') as create_dt , i.create_id, ih.iid as chkIid";
     stringQuery += " FROM t_inventory i, t_Ivt_hst ih  ";
-    stringQuery += " WHERE i.iid = ih.iid and ih.hid = " + vhid;
+    stringQuery += " WHERE i.iid = ih.iid and ih.hid = $1 ";
     stringQuery += " ORDER BY i.iid DESC ";
+    stringQuery += " LIMIT $2 OFFSET $3";
     return stringQuery
   }
   
-  joinHid (viid) {
+  joinHost () {
     let stringQuery = "";
     stringQuery += " SELECT h.hid as hid, h.name, h.content, h.domain, h.os, h.ip, h.use_yn, to_char(h.create_dt, \'yyyy-mm-dd hh24:mi:ss\') as create_dt , h.create_id, ih.hid as chkHid";
     stringQuery += " from t_hosts h  ";
     stringQuery += " left outer join t_Ivt_hst ih  ";
-    stringQuery += " on h.hid = ih.hid and ih.iid = " + viid;
+    stringQuery += " on h.hid = ih.hid and ih.iid = $1 ";
     stringQuery += " ORDER BY h.name ASC ";
+    stringQuery += " LIMIT $2 OFFSET $3";
     return stringQuery
   }
   
-  totalCount (vname) {
+  totalCount (name) {
     let stringQuery = 'SELECT COUNT(*) AS total FROM t_hosts ';
-    if (vname.length > 1) {
-      stringQuery += " WHERE name like \'%" + vname + "%\' ";
+    if (name.length > 1) {
+      stringQuery += " WHERE name like \'%" + name + "%\' ";
     }
     return stringQuery
   }
@@ -131,27 +86,7 @@ class sql {
     stringQuery += " SELECT NEXTVAL('t_hosts_hid_seq'); ";
     return stringQuery
   }
-  
-  insertHostInv (viid, vhid)  {
-    let stringQuery = "";
-    stringQuery += " INSERT INTO t_Ivt_hst ( iid, hid ) ";
-    stringQuery += " VALUES ";
-    stringQuery += " ( " + viid[0] + ", " + vhid + " ) ";
-    for (let i = 1; i < viid.length; i++) {
-      stringQuery += " , ( " + viid[i] + ", " + vhid + " ) ";
-    }
-    return stringQuery
-  }
-  
-  delInvHost (vhid) {
-    let stringQuery ="";
-    stringQuery += " DELETE FROM t_Ivt_hst ";
-    stringQuery += " WHERE hid IN ( " + vhid + " ) ";
-    // if( viid && isNaN(viid) === false ) {
-    //     stringQuery += " AND iid = " + viid + " ";
-    // }
-    return stringQuery
-  }
+
   
 }
 

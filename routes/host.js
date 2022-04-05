@@ -1,315 +1,185 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
 
 const db = require('../db/db.js');
-const sql = require('../db/sql/hostSql.js');
+const hostBuilder = require('../dto/hostBuilder');
+const hostSql = require('../db/sql/hostSql.js');
+const invHostSql = require('../db/sql/invHostSql.js');
 const addslashes = require('../db/addslashes.js');
 
 /* Post Hosts (Insert) */
 router.post('/', (req, res, next) => {
-	let name = req.body.name ? addslashes(req.body.name) : "";
-	let domain = req.body.domain ? addslashes(req.body.domain) : "";
-	let content = req.body.content ? addslashes(req.body.content) : "";
-	let os = req.body.os ? addslashes(req.body.os) : "";
-	let ip = req.body.ip ? addslashes(req.body.ip) : "";
-	let datasource = req.body.datasource ? addslashes(req.body.datasource) : "";
-	let datacenter = req.body.datacenter ? addslashes(req.body.datacenter) : "";
-	let use_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "Y";
-	let iid = req.body.iid ? addslashes(req.body.iid) : "";
-	iid = iid.split(',');
+	const dto = new hostBuilder().setName(addslashes(req.body.name))
+								.setContent(addslashes(req.body.content))
+								.setDomain(addslashes(req.body.domain))
+								.setOs(addslashes(req.body.os))
+								.setIp(addslashes(req.body.ip))
+								.setDatasource(addslashes(req.body.datasource))
+								.setDatacenter(addslashes(req.body.datacenter))
+								.setUse_yn(req.body.use_yn ? addslashes(req.body.use_yn) : "Y")
+								.build();
 
-	let stringQuery = sql.post(vname, vdomain, vcontent, vos, vip, vuse_yn, vdatasource, vdatacenter)
+	db.query(hostSql.post(), [dto.name, dto.content, dto.domain,
+						dto.os, dto.ip, dto.use_yn,
+						dto.datasource, dto.datacenter], (err) => {
+		if (err) return next(err);
+			
+		return res.json(db.resultMsg('a001', req.body));
 
-	db.query(stringQuery, [], (err, rows) => {
-		if (err) {
-			if (err.code === '23505') {
-				res.json(db.resultMsg('403'[1], req.body));
-			} else {
-				return next(err);
-			}
-		} else {
-			if (rows.rowCount < 1) {
-				res.json(db.resultMsg('403'[1], req.body));
-			} else {
-				console.log('### Successfully insert datas');
-				res.json(db.resultMsg('200'[0], req.body));
-
-				// When you want to set Inventory at the same time..
-				// getHidSeq().then( (result) => {
-				//     //console.log('### NEXTVAL : '+result);
-				//     let vhid = result;
-				//     vhid = Number(vhid)-1;
-				//     delInvHost(vhid).then( (delResult) => {
-				//         console.log('### After delete : ' + delResult);
-				//         if(viid.length > 0) {
-				//             insertHostInv(viid, vhid).then( (istResult) => {
-				//                 console.log('### After INSERT : '+istResult);
-				//             });
-				//         }
-				//         res.json(db.resultMsg('200'[0], req.body));
-				//     });
-				// });
-			}
-		}
 	});
 
 });
 
 /* PUT Hosts (Update) */
-router.put('/', (req, res, next) => {
-	let vseq = req.query.seq ? addslashes(req.query.seq) : "";
-	let vname = req.body.name ? addslashes(req.body.name) : "";
-	let vdomain = req.body.domain ? addslashes(req.body.domain) : "";
-	let vcontent = req.body.content ? addslashes(req.body.content) : "";
-	let vos = req.body.os ? addslashes(req.body.os) : "";
-	let vip = req.body.ip ? addslashes(req.body.ip) : "";
-	let vdatasource = req.body.datasource ? addslashes(req.body.datasource) : "";
-	let vdatacenter = req.body.datacenter ? addslashes(req.body.datacenter) : "";
-	let vuse_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "";
-	let viid = req.body.iid ? addslashes(req.body.iid) : "";
-	if (viid) {
-		viid = viid.split(',');
-	}
+router.put('/:seq', (req, res, next) => {
+	let seq = req.params.seq ? addslashes(req.params.seq) : "";
+	
+	const dto = new hostBuilder().setName(addslashes(req.body.name))
+								.setContent(addslashes(req.body.content))
+								.setDomain(addslashes(req.body.domain))
+								.setOs(addslashes(req.body.os))
+								.setIp(addslashes(req.body.ip))
+								.setDatasource(addslashes(req.body.datasource))
+								.setDatacenter(addslashes(req.body.datacenter))
+								.setUse_yn(req.body.use_yn ? addslashes(req.body.use_yn) : "Y")
+								.build();
 
-	if (vseq) {
-		if (isNaN(vseq) === false) {
-			let stringQuery = sql.update(vname, vdomain, vcontent, vos, vip, vuse_yn, vdatasource, vdatacenter, vseq)
-
-			db.query(stringQuery, [], (err, rows) => {
-				if (err) {
-					if (err.code === '23505') {
-						res.json(db.resultMsg('403'[1], req.body));
-					} else {
-						return next(err);
-					}
-				} else {
-					if (rows.rowCount < 1) {
-						res.json(db.resultMsg('403'[1], req.body));
-					} else {
-						res.json(db.resultMsg('200'[0], req.body));
-					}
-				}
-			});
-
-		} else {
-			// console.log(db.resultMsg('500'[2], req.body));
-			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('403'[0], req.body));
-		}
-	} else {
-		// console.log(db.resultMsg('500'[2], req.body));
-		console.log("Host ID does not exist!!");
-		res.json(db.resultMsg('403'[0], req.body));
-	}
+	db.query(hostSql.update(), [dto.name, dto.content, dto.domain,
+							dto.os, dto.ip, dto.use_yn,
+							dto.datasource, dto.datacenter, seq], (err) => {
+		if(err) return next(err);
+		return res.json(db.resultMsg('a001', req.body));
+	});
 });
 
 /* DELETE Hosts (delete) */
-router.delete('/', (req, res, next) => {
-	let vseq = req.query.seq ? addslashes(req.query.seq) : "";
+router.delete('/:seq', (req, res, next) => {
+	let seq = req.params.seq ? addslashes(req.params.seq) : "";
 
-	if (vseq) {
-		if (typeof vseq == 'string') {
-			let stringQuery = sql.delete(vseq)
+	db.query(hostSql.delete(), [seq], (hErr) => {
+		if (hErr) return next(hErr);
 
-			db.query(stringQuery, [], (err, rows) => {
-				if (err) {
-					return next(err);
-				}
-
-				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('403'[1], req.body));
-				} else {
-					res.json(db.resultMsg('200'[0], req.body));
-
-					delInvHost(vseq).then((delResult) => {
-						console.log('### Successfully delete Inventory-Host join row : ' + delResult);
-					}).catch(err => {
-						if (err) {
-							console.log('### Delete Inventory-Host join table Error :' + err);
-						}
-					});
-				}
-			});
-		} else {
-			console.log("Type error! Please input String type ID!!");
-			res.json(db.resultMsg('403'[0], req.body));
-		}
-	} else {
-		console.log("Host ID does not exist!!");
-		res.json(db.resultMsg('403'[0], req.body));
-	}
+		db.query(invHostSql.deleteHid(), [[seq]], (ihErr) => {
+			if(ihErr) return next(ihErr);
+			res.json(db.resultMsg('a001', seq));
+		});
+	});
 });
 
 /* GET Hosts (SELECT ONE) */
-router.get('/o', (req, res, next) => {
-	let vseq = req.query.seq ? addslashes(req.query.seq) : "";
+router.get('/:seq', (req, res, next) => {
+	let seq = req.params.seq ? addslashes(req.params.seq) : "";
 
-	if (vseq) {
-		if (isNaN(vseq) === false) {
-			let stringQuery = sql.getOneRow(vseq)
+	db.query(hostSql.getOneRow(), [seq], (err, rows) => {
+		if (err) return next(err);
 
-			db.query(stringQuery, [], (err, rows) => {
-				if (err) {
-					return next(err);
-				}
-				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('500'[2], rows.rows[0]));
-				} else {
-					// console.log(db.resultMsg('200'[0], rows.rows));
-					res.json(db.resultMsg('200'[0], rows.rows[0]));
-				}
-			});
-		} else {
-			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('403'[0], req.body));
-		}
-	} else {
-		console.log("Host ID does not exist!!");
-		res.json(db.resultMsg('403'[0], req.body));
-	}
+		res.json(db.resultMsg('a001', rows.rows));
+	});
 });
 
 /* GET Hosts listing. */
 router.get('/', (req, res, next) => {
-	let vdata = {};
-	let vpage = req.query.page ? addslashes(req.query.page) : "";
-	let vpageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
-	let vname = req.query.name ? addslashes(req.query.name) : "";
+	let data = {};
+	let page = req.query.page ? addslashes(req.query.page) : "";
+	let pageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
+	let name = req.query.name ? addslashes(req.query.name) : "";
 
-	if (vpage == "" || vpage < 1) {
-		vpage = 1;
+	if (page == "" || page < 1) {
+		page = 1;
 	}
-	if (vpageSize == "" || vpageSize < 1) {
-		vpageSize = 15;
+	if (pageSize == "" || pageSize < 1) {
+		pageSize = 15;
 	}
-	let vstart = (vpage - 1) * vpageSize;
+	const start = (page - 1) * pageSize;
 
-	let stringQuery = sql.getList(vname)
+	db.query(hostSql.getList(name), [pageSize, start], (err, rows) => {
+		if (err) return next(err);
 
-	db.query(stringQuery, [], (err, rows) => {
-		if (err) {
-			return next(err);
-		}
+		totalCount(name).then((result) => {
+			data['rowCount'] = rows.rowCount;
+			data['totalCount'] = result;
+			data['page'] = page;
+			data['pageSize'] = pageSize;
+			data['list'] = rows.rows;
 
-		totalCount(req).then((result) => {
-			vdata['rowCount'] = rows.rowCount;
-			vdata['totalCount'] = result;
-			vdata['page'] = vpage;
-			vdata['pageSize'] = vpageSize;
-			vdata['list'] = rows.rows;
-
-			if (vdata.rowCount < 1) {
-				res.json(db.resultMsg('500'[2], rows.rows));
-			} else {
-				// console.log(db.resultMsg('200'[0], vdata));
-				res.json(db.resultMsg('200'[0], vdata));
-			}
+			res.json(db.resultMsg('a001', data));
 		}).catch((err) => {
-			if (err) {
-				console.log(err);
-			}
+			if (err) console.error(err);
 		});
 	});
 });
 
 
 /* Get Modal Inventory Listing */
-router.get('/connectedIvts', (req, res, next) => {
-	let vdata = {};
-	let vhid = req.query.hid ? addslashes(req.query.hid) : "";
+router.get('/joinedIventory', (req, res, next) => {
+	let data = {};
+	let page = req.query.page ? addslashes(req.query.page) : "";
+	let pageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
+	let hid = req.query.hid ? addslashes(req.query.hid) : "";
 
-	if (vhid) {
-		if (isNaN(vhid) === false) {
-			let stringQuery = sql.connectedIvts(vhid)
-
-			db.query(stringQuery, [], (err, rows) => {
-				if (err) {
-					return next(err);
-				}
-				totalCount(req).then((result) => {
-					vdata['rowCount'] = rows.rowCount;
-					vdata['totalCount'] = result;
-					// vdata['page'] = vpage;
-					// vdata['pageSize'] = vpageSize
-					vdata['list'] = rows.rows;
-
-					if (vdata.rowCount < 1) {
-						res.json(db.resultMsg('500'[2], rows.rows[0]));
-					} else {
-						// console.log(db.resultMsg('200'[0], vdata));
-						res.json(db.resultMsg('200'[0], vdata));
-					}
-				}).catch((err) => {
-					if (err) {
-						console.log(err);
-					}
-				});
-			});
-		} else {
-			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('403'[0], req.body));
-		}
-	} else {
-		console.log("Inventory ID does not exist!!");
-		res.json(db.resultMsg('403'[0], req.body));
+	if (page == "" || page < 1) {
+		page = 1;
 	}
+	if (pageSize == "" || pageSize < 1) {
+		pageSize = 15;
+	}
+	const start = (page - 1) * pageSize;
+
+	db.query(hostSql.joinedIventory(), [hid, pageSize, start], (err, rows) => {
+		if (err) return next(err);
+		
+		totalCount(req).then((result) => {
+			data['rowCount'] = rows.rowCount;
+			data['totalCount'] = result;
+			data['page'] = vpage;
+			data['pageSize'] = vpageSize
+			data['list'] = rows.rows;
+
+			res.json(db.resultMsg('a001', data));
+
+		}).catch((err) => {
+			if (err) console.error(err);
+		});
+	});
 });
 
 /* Get Modal Inventory Listing */
-router.get('/joinHid', (req, res, next) => {
-	let vdata = {};
-	let viid = req.query.iid ? addslashes(req.query.iid) : "";
+router.get('/joinedHid', (req, res, next) => {
+	let data = {};
+	let iid = req.query.iid ? addslashes(req.query.iid) : "";
 
-	if (viid) {
-		if (isNaN(viid) === false) {
-			let stringQuery = sql.joinHid(viid)
-
-			db.query(stringQuery, [], (err, rows) => {
-				if (err) {
-					return next(err);
-				}
-				totalCount(req).then((result) => {
-					vdata['rowCount'] = rows.rowCount;
-					vdata['totalCount'] = result;
-					// vdata['page'] = vpage;
-					// vdata['pageSize'] = vpageSize
-					vdata['list'] = rows.rows;
-
-					if (vdata.rowCount < 1) {
-						res.json(db.resultMsg('500'[2], rows.rows[0]));
-					} else {
-						// console.log(db.resultMsg('200'[0], vdata));
-						res.json(db.resultMsg('200'[0], vdata));
-					}
-				}).catch((err) => {
-					if (err) {
-						console.log(err);
-					}
-				});
-			});
-		} else {
-			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('403'[0], req.body));
-		}
-	} else {
-		console.log("Inventory ID does not exist!!");
-		res.json(db.resultMsg('403'[0], req.body));
+	if (page == "" || page < 1) {
+		page = 1;
 	}
+	if (pageSize == "" || pageSize < 1) {
+		pageSize = 15;
+	}
+	const start = (page - 1) * pageSize;
+
+	db.query(hostSql.joinHid, [iid, pageSize, start], (err, rows) => {
+		if (err) return next(err);
+
+		totalCount(req).then((result) => {
+			data['rowCount'] = rows.rowCount;
+			data['totalCount'] = result;
+			data['page'] = vpage;
+			data['pageSize'] = vpageSize
+			data['list'] = rows.rows;
+
+			res.json(db.resultMsg('a001', data));
+			
+		}).catch((err) => {
+			if (err) console.error(err);
+		});
+	});
 });
 
-function totalCount(req) {
+function totalCount(name) {
 	let vdata = {};
-	let vname = req.query.name ? addslashes(req.query.name) : "";
-
-	let stringQuery = sql.totalCount(vname)
 
 	return new Promise((resolve, reject) => {
-		db.query(stringQuery, [], (err, rows) => {
-			if (err) {
-				return reject(err);
-			}
-			// console.log("total func: " + rows.rows[0].total);
+		db.query(hostSql.totalCount(name), [], (err, rows) => {
+			if (err) return reject(err);
 			resolve(rows.rows[0].total);
 
 		});
@@ -319,73 +189,21 @@ function totalCount(req) {
 function getHidSeq() {
 
 	return new Promise((resolve, reject) => {
-		let stringQuery = sql.getHidSeq()
-		db.query(stringQuery, [], (err, rows) => {
-			if (err) {
-				return reject(err);
-			}
-			if (rows.rowCount < 1) {
-				console.log('500 [2]: Get hid Sequence err');
-				// res.json(db.resultMsg('500'[2], rows.rows));
-			} else {
-				resolve(rows.rows[0].nextval);
-				console.log('200 [0]: Get hid Sequence success');
-				// res.json(db.resultMsg('200'[0], rows.rows));
-			}
+		db.query(hostSql.getHidSeq(), [], (err, rows) => {
+			if (err) return reject(err);
+			
+			resolve(rows.rows[0].nextval);	
 		});
 	});
 }
 
-function insertHostInv(viid, vhid) {
-
+function delJoinedHost(hid) {
 	return new Promise((resolve, reject) => {
-		if (viid || vhid) {
-			if (isNaN(viid) === false || isNaN(vhid) === false) {
-				let stringQuery = sql.insertHostInv(viid, vhid)
-				db.query(stringQuery, [], (err, rows) => {
-					if (err) {
-						return reject(err);
-						// res.json(db.resultMsg('403'[1], req.body));
-					} else {
-						if (rows.rowCount < 1) {
-							console.log('403: Insert into Inventory-Host join table err');
-							resolve(rows.rows[0]);
-							// res.json(db.resultMsg('403'[1], req.body));
-						} else {
-							console.log('200: Insert ino Inventory-Host join table success');
-							resolve(rows.rows[0]);
-							// res.json(db.resultMsg('200'[0], req.body));
-						}
-					}
-				});
-			} else {
-				console.log("Type error! Please input Integer type ID!!");
-				res.json(db.resultMsg('403'[0], req.body));
-			}
-		} else {
-			console.log("Inventory-host ID does not exist!!");
-			res.json(db.resultMsg('403'[0], req.body));
-		}
-	});
-}
+		db.query(invHostSql.deleteIid(), [iid], (err, rows) => {
+			if (err) return reject(err);
 
-function delInvHost(vhid) {
-	return new Promise((resolve, reject) => {
-		if (vhid) {
-			let stringQuery = sql.delInvHost(vhid)
-
-			db.query(stringQuery, [], (err, rows) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve(rows);
-			});
-
-
-		} else {
-			console.log("Inventory-Host ID does not exist!!");
-			res.json(db.resultMsg('403'[0], req.body));
-		}
+			resolve(rows);
+		});
 	});
 }
 

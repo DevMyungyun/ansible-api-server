@@ -6,24 +6,24 @@ class sql {
     let stringQuery = "";
     stringQuery += " SELECT je.*, j.end_dt  ";
     stringQuery += " from (  ";
-    stringQuery += " SELECT *, 0 sort_order from t_jobevents where jid=" + vseq + " and (stdout not like '%ok=%' and stdout not like '%RECAP%') ";
+    stringQuery += " SELECT *, 0 sort_order from t_jobevents where jid=$1 and (stdout not like '%ok=%' and stdout not like '%RECAP%') ";
     stringQuery += " union all ";
-    stringQuery += " SELECT *, 1 sort_order from t_jobevents where jid=" + vseq + " and stdout like '%RECAP%'  ";
+    stringQuery += " SELECT *, 1 sort_order from t_jobevents where jid=$1 and stdout like '%RECAP%'  ";
     stringQuery += " union all  ";
-    stringQuery += " SELECT *, 2 sort_order from t_jobevents where jid=" + vseq + " and stdout like '%ok=%' and stdout like '%changed=%' and stdout like '%failed=%' and stdout not like '%RECAP%' ";
+    stringQuery += " SELECT *, 2 sort_order from t_jobevents where jid=$1 and stdout like '%ok=%' and stdout like '%changed=%' and stdout like '%failed=%' and stdout not like '%RECAP%' ";
     stringQuery += "  ) je, t_jobs j ";
-    stringQuery += " where je.jid = " + vseq + " and j.jid = " + vseq + "  ";
+    stringQuery += " where je.jid = $1 and j.jid = $1  ";
     stringQuery += " order by sort_order, eid asc ";
     return stringQuery
   }
   
-  getList (vpageSize, vstart) {
+  getList () {
     let stringQuery = "";
     stringQuery += " SELECT eid, jid, create_dt , stdout ";
     stringQuery += " FROM t_jobevents ";
     // stringQuery += " where use_yn = \'Y\' ";
     stringQuery += " ORDER BY eid ASC ";
-    stringQuery += " LIMIT " + vpageSize + " OFFSET " + vstart;
+    stringQuery += " LIMIT $1 OFFSET $2 ";
     return stringQuery
   }
   
@@ -37,7 +37,7 @@ class sql {
     let stringQuery = "";
     stringQuery += " SELECT tid, name, content, iid, iname, playbook, forks, limits, verb, variables, cname, use_yn ";
     stringQuery += " FROM  t_jobtemps ";
-    stringQuery += " WHERE tid = " + vtid + " ";
+    stringQuery += " WHERE tid = $1 ";
     return stringQuery
   }
   
@@ -45,7 +45,7 @@ class sql {
     let stringQuery = "";
     stringQuery += " SELECT tid, name, content, iid, iname, module, argument, forks, limits, verb, variables, cname, use_yn ";
     stringQuery += " FROM  t_adhoc ";
-    stringQuery += " WHERE tid = " + vtid + " ";
+    stringQuery += " WHERE tid = $1 ";
     return stringQuery
   }
   
@@ -53,7 +53,7 @@ class sql {
     let stringQuery = "";
     stringQuery += " SELECT mid, mpw, private_key ";
     stringQuery += " FROM  t_credentials ";
-    stringQuery += " WHERE name = \'" + vcname + "\' ";
+    stringQuery += " WHERE name = $1 ";
     return stringQuery
   }
   
@@ -62,7 +62,7 @@ class sql {
     stringQuery += " select h.name, h.domain, h.ip ";
     stringQuery += " from t_hosts h, t_Ivt_hst i ";
     stringQuery += " where i.hid = h.hid ";
-    stringQuery += " and iid = " + viid + " ";
+    stringQuery += " and iid = $1 ";
     stringQuery += " and use_yn = \'Y\' ";
     stringQuery += " order by h.name ASC ";
     return stringQuery
@@ -76,7 +76,7 @@ class sql {
   insertJobQuery (vdata) {
     let stringQuery = "";
     stringQuery += " INSERT INTO t_jobs ( iid, iname, tid, tname, chk_temp, forks, verb, variables, limits, status, start_dt ) ";
-    stringQuery += " VALUES ( " + vdata.iid + ", \'" + vdata.iname + "\', " + vdata.tid + ", \'" + vdata.name + "\', \'" + vdata.chk_temp + "\', " + vdata.forks + ", " + vdata.verb + ", \'" + vdata.variables + "\', \'" + vdata.limits + "\', " + '\'P\'' + ", now() ) ";
+    stringQuery += " VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, \'P\', now() ) ";
     return stringQuery
   }
   
@@ -89,7 +89,7 @@ class sql {
   insertJobeventQuery (vjid, vpid, vcheck, data) {
     let stringQuery = "";
     stringQuery = " INSERT INTO t_jobevents ( jid, pid, chk_temp, create_dt, stdout ) ";
-    stringQuery += " VALUES ( " + vjid + ", " + vpid + ", \'" + vcheck + "\', NOW(), \'" + addslashes(data) + "\') ";
+    stringQuery += " VALUES ( $1, $2, $3, NOW(), \'" + addslashes(data) + "\') ";
     return stringQuery
   }
   

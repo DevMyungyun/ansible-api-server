@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+
 const logger = require('morgan');
 
 const helmet = require('helmet');
@@ -39,10 +41,11 @@ app.use(express.urlencoded({
   extended: false
 }));
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 app.use('/v1/', indexRouter);
 app.use('/v1/inventory', inventoryRouter);
-app.use('/v1/ivtHst', invHstRouter);
+app.use('/v1/invHost', invHstRouter);
 app.use('/v1/jobevent', jobeventRouter);
 app.use('/v1/host', hostRouter);
 app.use('/v1/jobtemp', jobtempRouter);
@@ -63,7 +66,9 @@ app.use((err, req, res, next) => {
   console.error(err);
   // render the error page
   res.status(err.status || 500).json(
-    {"code": err.code, "message": err.message}
+    {"code": err.code, 
+    "severity": err.severity, 
+    "message": err.message}
   );
   // res.render('error', {
   //   message: err.status
