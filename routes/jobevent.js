@@ -8,269 +8,392 @@ const rsa = require('node-rsa');
 const conf = require('../config.js');
 
 const db = require('../db/db.js');
-const sql = require('../db/sql/jobeventSql.js')
+const sql = require('../db/sql/jobeventSql.js');
+const jobSql = require('../db/sql/jobSql');
 const addslashes = require('../db/addslashes.js');
-// const func = require('../db/func.js');
 
 const key = new rsa(conf.rsa);
-let vjid = "";
 let vjdata = {};
 
-/* POST Job Event (Insert) */
-router.post('/', (req, res, next) => {
-  let vtid = req.body.tid ? addslashes(req.body.tid) : "";
-  let vcheck = req.body.chk_temp ? addslashes(req.body.chk_temp) : "";
-  let vran = 'f' + (Math.random() * (1 << 30)).toString(16).replace('.', '');
-  let vdic = conf.fileStorage + vran;
+/* POST Adhoc Job Event (Insert) */
+router.post('/playbook', (req, res, next) => {
+  const vtid = req.body.tid ? addslashes(req.body.tid) : "";
+  const vran = 'f' + (Math.random() * (1 << 30)).toString(16).replace('.', '');
+  const vdic = conf.fileStorage + vran;
   let vjid = ""
 
-  // Check which template is going to excute between Playbook and Ad-Hoc
-  if (vcheck == 'AP') {
-    selectJobTemplate(vtid).then((resultJT) => {
-      if (resultJT != null && resultJT.use_yn == 'Y') {
-        // Directory Create
-        mkDir(vdic);
-        resultJT['chk_temp'] = 'AP';
-        selectCred(resultJT.cname).then((resultMCred) => {
-          const vmid = resultMCred.mid;
-          const vmpw = resultMCred.mpw;
-          const vmpk = resultMCred.private_key;
-          //Host
-          selectHosts(resultJT.iid).then((resultH) => {
-            let inventoryUrl = vdic + "/hosts";
-            let envUrl = vdic + "/vars";
-            let pkUrl = vdic + "/id_dsa_pk";
-            let vforksCli = '--forks=' + resultJT.forks;
-            let playbookUrl = conf.playbook + resultJT.playbook;
-            let vverb = resultJT.verb;
-            let vlimits = resultJT.limits;
+  selectJobTemplate(vtid).then((resultJT) => {
+    if (resultJT != null && resultJT.use_yn == 'Y') {
+      // Directory Create
+      mkDir(vdic);
+      resultJT['chk_temp'] = 'AP';
+      selectCred(resultJT.cname).then((resultMCred) => {
+        const vmid = resultMCred.mid;
+        const vmpw = resultMCred.mpw;
+        const vmpk = resultMCred.private_key;
+        //Host
+        selectHosts(resultJT.iid).then((resultH) => {
+          const inventoryUrl = vdic + "/hosts";
+          const envUrl = vdic + "/vars";
+          const pkUrl = vdic + "/id_dsa_pk";
+          const vforksCli = '--forks=' + resultJT.forks;
+          const playbookUrl = conf.playbook + resultJT.playbook;
+          const vverb = resultJT.verb;
+          const vlimits = resultJT.limits;
 
-            if (vverb === 0) {
-              vverb = '-v';
-            } else if (vverb === 1) {
-              vverb = '-vv';
-            } else if (vverb === 2) {
-              vverb = '-vvv';
-            } else if (vverb === 3) {
-              vverb = '-vvvv';
-            } else if (vverb === 4) {
-              vverb = '-vvvvv';
-            } else {
-              vverb = '-v'
-            }
+          if (vverb === 0) {
+            vverb = '-v';
+          } else if (vverb === 1) {
+            vverb = '-vv';
+          } else if (vverb === 2) {
+            vverb = '-vvv';
+          } else if (vverb === 3) {
+            vverb = '-vvvv';
+          } else if (vverb === 4) {
+            vverb = '-vvvvv';
+          } else {
+            vverb = '-v'
+          }
 
-            // Create hosts file
-            writeFile(inventoryUrl, resultH);
+          // Create hosts file
+          writeFile(inventoryUrl, resultH);
 
-            // Create Vars file
-            // console.log(resultJT);
+          // Create Vars file
+          // console.log(resultJT);
 
-            let vCredential = '';
+          let vCredential = '';
 
-            if (((vmpk == null) && (vmid && vmpw)) || ((vmpk == '') && (vmid && vmpw))) {
-              vCredential = '\nansible_user: ' + vmid.replace(/\\\\/g, '\\') + '\nansible_password: \'' + key.decrypt(vmpw, 'utf8') + '\'\n';
-            } else if (((vmpk != null) && (vmid && vmpw)) || ((vmpk != '') && (vmid && vmpw))) {
-              let decryptPK = key.decrypt(vmpk, 'utf8')
-              writeFile(pkUrl, decryptPK.replace(/\\n/g, '\n'));
-              fileChmod(pkUrl, '600');
-              vCredential = '\nansible_ssh_private_key_file: ' + pkUrl + '\nansible_user: ' + vmid.replace(/\\\\/g, '\\') + '\nansible_ssh_password: \'' + key.decrypt(vmpw, 'utf8') + '\'\n';
-            } else {
-              vCredential = '';
-            }
+          if (((vmpk == null) && (vmid && vmpw)) || ((vmpk == '') && (vmid && vmpw))) {
+            vCredential = '\nansible_user: ' + vmid.replace(/\\\\/g, '\\') + '\nansible_password: \'' + key.decrypt(vmpw, 'utf8') + '\'\n';
+          } else if (((vmpk != null) && (vmid && vmpw)) || ((vmpk != '') && (vmid && vmpw))) {
+            let decryptPK = key.decrypt(vmpk, 'utf8')
+            writeFile(pkUrl, decryptPK.replace(/\\n/g, '\n'));
+            fileChmod(pkUrl, '600');
+            vCredential = '\nansible_ssh_private_key_file: ' + pkUrl + '\nansible_user: ' + vmid.replace(/\\\\/g, '\\') + '\nansible_ssh_password: \'' + key.decrypt(vmpw, 'utf8') + '\'\n';
+          } else {
+            vCredential = '';
+          }
 
-            writeFile(envUrl, resultJT.variables.replace(/\\n/g, '\n') + vCredential);
+          writeFile(envUrl, resultJT.variables.replace(/\\n/g, '\n') + vCredential);
 
-            //Job Insert
-            insertJob(resultJT).then((result) => {
-              vjid = result;
-              vjdata['jid'] = vjid;
-            });
+          //Job Insert
+          insertJob(resultJT).then((result) => {
+            vjid = result;
+            vjdata['jid'] = vjid;
+          });
 
-            let args = ['-i', inventoryUrl, '-e', '@' + envUrl, vforksCli, vverb, playbookUrl];
+          let args = ['-i', inventoryUrl, '-e', '@' + envUrl, vforksCli, vverb, playbookUrl];
 
-            if (vlimits != '') {
-              args.push('--limit');
-              args.push('@' + vlimits);
-            }
-            console.log('### COMMAND ARGS :  ', args);
+          if (vlimits != '') {
+            args.push('--limit');
+            args.push('@' + vlimits);
+          }
+          console.log('### COMMAND ARGS :  ', args);
 
-            const ansible = spawn('ansible-playbook', args, {
-              stdio: ['inherit', 'pipe']
-            });
+          const ansible = spawn('ansible-playbook', args, {
+            stdio: ['inherit', 'pipe']
+          });
 
-            ansible.stdout.on('data', (data) => {
-              const vpid = ansible.pid
-              insertJobevent(data, vjid, vpid, vcheck);
-            });
+          ansible.stdout.on('data', (data) => {
+            const vpid = ansible.pid
+            insertJobevent(data, vjid, vpid, vcheck);
+          });
 
-            ansible.stderr.on('data', (data) => {
-              console.log(new Date() + 'ipconfig error...');
-            });
+          ansible.stderr.on('data', (data) => {
+            console.log(new Date() + 'ipconfig error...');
+          });
 
-            ansible.on('close', (code) => {
-              console.log(new Date() + 'ansible-playbook complete...' + code);
-              updateJobevent(code, vjid);
-              // DELETE Directory
-              rmDir(vdic);
-              res.json(db.resultMsg('200'[0], vjdata));
-            });
-          }).catch((err) => {
-            if (err) {
-              console.log(err);
-            }
+          ansible.on('close', (code) => {
+            console.log(new Date() + 'ansible-playbook complete...' + code);
+            updateJobevent(code, vjid);
+            // DELETE Directory
+            rmDir(vdic);
+            res.json(db.resultMsg('a001', vjdata));
           });
         }).catch((err) => {
           if (err) {
             console.log(err);
           }
         });
-      } else if (resultJT.use_yn == 'N') {
-        console.log('### This Playbook Template does not allow to use');
-        res.json(db.resultMsg('500'[0], req.body));
-      } else {
-        console.log('Job Template ID does not exist in database');
-        res.json(db.resultMsg('500'[2], req.body));
-      }
-
-
-    }).catch((err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
-
-    // Excuting Ansible-PlayBook is end
-  } else {
-    // ADHOC excute
-    selectAHTemplate(vtid).then((resultAHT) => {
-      if (resultAHT != null && resultAHT.use_yn == 'Y') {
-
-        // Directory Create
-        mkDir(vdic);
-
-        resultAHT['chk_temp'] = 'AH';
-        selectCred(resultAHT.cname).then((resultMCred) => {
-          const vmid = resultMCred.mid;
-          const vmpw = resultMCred.mpw;
-          const vmpk = resultMCred.private_key;
-          //Host
-          selectHosts(resultAHT.iid).then((resultH) => {
-            // console.log(resultAHT);
-            //console.log('######host : '+resultH);
-            let inventoryUrl = vdic + "/hosts";
-            let envUrl = vdic + "/vars";
-            let pkUrl = vdic + "/id_dsa_pk";
-            let vforksCli = '--forks=' + resultAHT.forks;
-            let vmodule = resultAHT.module;
-            let varg = resultAHT.argument;
-            let vverb = resultAHT.verb;
-            let vlimits = resultAHT.limits;
-
-            if (vverb === 0) {
-              vverb = '-v';
-            } else if (vverb === 1) {
-              vverb = '-vv';
-            } else if (vverb === 2) {
-              vverb = '-vvv';
-            } else if (vverb === 3) {
-              vverb = '-vvvv';
-            } else if (vverb === 4) {
-              vverb = '-vvvvv';
-            } else {
-              vverb = '-v'
-            }
-
-            // Create hosts file
-            writeFile(inventoryUrl, resultH);
-
-            // Create Vars file
-            // console.log(resultAHT);
-
-            let vCredential = '';
-
-            if (vmpk == null) {
-              vCredential = '\nansible_user: ' + vmid.replace(/\\\\/g, '\\') + '\nansible_password: \'' + key.decrypt(vmpw, 'utf8') + '\'\n';
-            } else if (vmpk != null) {
-              let decryptPK = key.decrypt(vmpk, 'utf8')
-              writeFile(pkUrl, decryptPK.replace(/\\n/g, '\n'));
-              fileChmod(pkUrl, '600');
-              vCredential = '\nansible_ssh_private_key_file: ' + pkUrl + '\nansible_user: ' + vmid.replace(/\\\\/g, '\\') + '\nansible_ssh_pass: \'' + key.decrypt(vmpw, 'utf8') + '\'\n';
-            } else {
-              vCredential = '';
-            }
-
-            writeFile(envUrl, resultAHT.variables.replace(/\\n/g, '\n') + vCredential);
-
-            // Insert Job data
-            insertJob(resultAHT).then((result) => {
-              vjid = result;
-              vjdata['jid'] = vjid;
-            });
-
-            const args = ['hosts', '-i', inventoryUrl, '-e', '@' + envUrl, vforksCli, vverb, '-m', vmodule];
-
-            if (vlimits !== '' && varg === '') {
-              args.push('-l');
-              args.push(vlimits);
-            } else if (vlimits === '' && varg !== '') {
-              args.push('-a');
-              args.push(varg);
-            } else if (vlimits !== '' && varg !== '') {
-              args.push('-a');
-              args.push(varg);
-              args.push('-l');
-              args.push(vlimits);
-            } else {
-              args
-            }
-
-            console.log('### COMMAND ARGS :  ', args);
-
-            const ansible = spawn('ansible', args, {
-              stdio: ['inherit', 'pipe']
-            });
-
-            ansible.stdout.on('data', (data) => {
-              const vpid = ansible.pid
-              insertJobevent(data, vjid, vpid, vcheck);
-            });
-
-            ansible.stderr.on('data', (data) => {
-              console.log(new Date() + 'ipconfig error...');
-            });
-
-            ansible.on('close', (code) => {
-              console.log(new Date() + 'ADHOC command complete...' + code);
-              updateJobevent(code, vjid);
-              // DELETE Directory
-              rmDir(vdic);
-              res.json(db.resultMsg('200'[0], vjdata));
-            });
-          }).catch((err) => {
-            if (err) {
-              console.log(err);
-            }
-          });
-        }).catch((err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
-      } else if (resultAHT.use_yn == 'N') {
-        console.log('### This Ad-Hoc Template does not allow to use');
-        res.json(db.resultMsg('500'[0], req.body));
-      } else {
-        console.log('ADHOC Template ID does not exist in database');
-        res.json(db.resultMsg('500'[2], req.body));
-      }
-    }).catch((err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
-  }
+      }).catch((err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    } else if (resultJT.use_yn == 'N') {
+      console.log('### This Playbook Template does not allow to use');
+      res.json(db.resultMsg('a502', req.body));
+    } else {
+      console.log('Job Template ID does not exist in database');
+      res.json(db.resultMsg('a501', req.body));
+    }
+  }).catch((err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+  // Excuting Ansible-PlayBook is end
 });
 
+function jobeventExecute(resultT, chk_template , varg) {
+  // Directory Create
+  mkDir(vdic);
+  resultT['chk_temp'] = chk_template;
+  selectCred(resultT.cname).then((resultMCred) => {
+    const vmid = resultMCred.mid;
+    const vmpw = resultMCred.mpw;
+    const vmpk = resultMCred.private_key;
+    //Host
+    selectHosts(resultT.iid).then((resultH) => {
+      const inventoryUrl = vdic + "/hosts";
+      const envUrl = vdic + "/vars";
+      const pkUrl = vdic + "/id_dsa_pk";
+      const vforksCli = '--forks=' + resultT.forks;
+      const vverb = resultT.verb;
+      const vlimits = resultT.limits;
+      const playbookUrlorModule = (resultT['chk_temp'] === 'AP') ?
+                              conf.playbook + resultT.playbook : resultT.module;
+      
+
+      if (vverb === 0) {
+        vverb = '-v';
+      } else if (vverb === 1) {
+        vverb = '-vv';
+      } else if (vverb === 2) {
+        vverb = '-vvv';
+      } else if (vverb === 3) {
+        vverb = '-vvvv';
+      } else if (vverb === 4) {
+        vverb = '-vvvvv';
+      } else {
+        vverb = '-v'
+      }
+
+      // Create hosts file
+      writeFile(inventoryUrl, resultH);
+
+      // Create Vars file
+      // console.log(resultT);
+
+      let vCredential = '';
+
+      if (((vmpk == null) && (vmid && vmpw)) || ((vmpk == '') && (vmid && vmpw))) {
+        vCredential = '\nansible_user: ' + vmid.replace(/\\\\/g, '\\') + '\nansible_password: \'' + key.decrypt(vmpw, 'utf8') + '\'\n';
+      } else if (((vmpk != null) && (vmid && vmpw)) || ((vmpk != '') && (vmid && vmpw))) {
+        let decryptPK = key.decrypt(vmpk, 'utf8')
+        writeFile(pkUrl, decryptPK.replace(/\\n/g, '\n'));
+        fileChmod(pkUrl, '600');
+        vCredential = '\nansible_ssh_private_key_file: ' + pkUrl + '\nansible_user: ' + vmid.replace(/\\\\/g, '\\') + '\nansible_ssh_password: \'' + key.decrypt(vmpw, 'utf8') + '\'\n';
+      } else {
+        vCredential = '';
+      }
+
+      writeFile(envUrl, resultT.variables.replace(/\\n/g, '\n') + vCredential);
+
+      //Job Insert
+      insertJob(resultT).then((result) => {
+        vjid = result;
+        vjdata['jid'] = vjid;
+      });
+
+      let args = (resultT['chk_temp'] === 'AP') ?
+             ['-i', inventoryUrl, '-e', '@' + envUrl, vforksCli, vverb, playbookUrlorModule]
+             : ['hosts', '-i', inventoryUrl, '-e', '@' + envUrl, vforksCli, vverb, '-m', playbookUrlorModule];
+
+      if(resultT['chk_temp'] === 'AP') {
+        // Playbook
+        if (vlimits != '') {
+          args.push('--limit');
+          args.push('@' + vlimits);
+        }
+      } else {
+        // ADHOC 
+        if (vlimits !== '' && varg === '') {
+          args.push('-l');
+          args.push(vlimits);
+        } else if (vlimits === '' && varg !== '') {
+          args.push('-a');
+          args.push(varg);
+        } else if (vlimits !== '' && varg !== '') {
+          args.push('-a');
+          args.push(varg);
+          args.push('-l');
+          args.push(vlimits);
+        } else {
+          args
+        }
+      }
+      
+      console.log('### COMMAND ARGS :  ', args);
+
+      const ansible = spawn('ansible-playbook', args, {
+        stdio: ['inherit', 'pipe']
+      });
+
+      ansible.stdout.on('data', (data) => {
+        const vpid = ansible.pid
+        insertJobevent(data, vjid, vpid, vcheck);
+      });
+
+      ansible.stderr.on('data', (data) => {
+        console.log(new Date() + 'ipconfig error...');
+      });
+
+      ansible.on('close', (code) => {
+        console.log(new Date() + 'ansible-playbook complete...' + code);
+        updateJobevent(code, vjid);
+        // DELETE Directory
+        rmDir(vdic);
+        res.json(db.resultMsg('a001', vjdata));
+      });
+    }).catch((err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+  }).catch((err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+}
+
+
+router.post('/adhoc', (req, res, next) => {
+  const vtid = req.body.tid ? addslashes(req.body.tid) : "";
+  const vran = 'f' + (Math.random() * (1 << 30)).toString(16).replace('.', '');
+  const vdic = conf.fileStorage + vran;
+  let vjid = ""
+
+  // ADHOC excute
+  selectAHTemplate(vtid).then((resultAHT) => {
+    if (resultAHT != null && resultAHT.use_yn == 'Y') {
+      let varg = resultAHT.argument;
+
+      // Directory Create
+      mkDir(vdic);
+
+      resultAHT['chk_temp'] = 'AH';
+      selectCred(resultAHT.cname).then((resultMCred) => {
+        const vmid = resultMCred.mid;
+        const vmpw = resultMCred.mpw;
+        const vmpk = resultMCred.private_key;
+        
+        //Host
+        selectHosts(resultAHT.iid).then((resultH) => {
+          // console.log(resultAHT);
+          //console.log('######host : '+resultH);
+          const inventoryUrl = vdic + "/hosts";
+          const envUrl = vdic + "/vars";
+          const pkUrl = vdic + "/id_dsa_pk";
+          const vforksCli = '--forks=' + resultAHT.forks;
+          const vmodule = resultAHT.module;
+          const vverb = resultAHT.verb;
+          const vlimits = resultAHT.limits;
+
+          if (vverb === 0) {
+            vverb = '-v';
+          } else if (vverb === 1) {
+            vverb = '-vv';
+          } else if (vverb === 2) {
+            vverb = '-vvv';
+          } else if (vverb === 3) {
+            vverb = '-vvvv';
+          } else if (vverb === 4) {
+            vverb = '-vvvvv';
+          } else {
+            vverb = '-v'
+          }
+
+          // Create hosts file
+          writeFile(inventoryUrl, resultH);
+
+          // Create Vars file
+          // console.log(resultAHT);
+
+          let vCredential = '';
+
+          if (vmpk == null) {
+            vCredential = '\nansible_user: ' + vmid.replace(/\\\\/g, '\\') + '\nansible_password: \'' + key.decrypt(vmpw, 'utf8') + '\'\n';
+          } else if (vmpk != null) {
+            let decryptPK = key.decrypt(vmpk, 'utf8')
+            writeFile(pkUrl, decryptPK.replace(/\\n/g, '\n'));
+            fileChmod(pkUrl, '600');
+            vCredential = '\nansible_ssh_private_key_file: ' + pkUrl + '\nansible_user: ' + vmid.replace(/\\\\/g, '\\') + '\nansible_ssh_pass: \'' + key.decrypt(vmpw, 'utf8') + '\'\n';
+          } else {
+            vCredential = '';
+          }
+
+          writeFile(envUrl, resultAHT.variables.replace(/\\n/g, '\n') + vCredential);
+
+          // Insert Job data
+          insertJob(resultAHT).then((result) => {
+            vjid = result;
+            vjdata['jid'] = vjid;
+          });
+
+          let args = ['hosts', '-i', inventoryUrl, '-e', '@' + envUrl, vforksCli, vverb, '-m', vmodule];
+
+          if (vlimits !== '' && varg === '') {
+            args.push('-l');
+            args.push(vlimits);
+          } else if (vlimits === '' && varg !== '') {
+            args.push('-a');
+            args.push(varg);
+          } else if (vlimits !== '' && varg !== '') {
+            args.push('-a');
+            args.push(varg);
+            args.push('-l');
+            args.push(vlimits);
+          } else {
+            args
+          }
+
+          console.log('### COMMAND ARGS :  ', args);
+
+          const ansible = spawn('ansible', args, {
+            stdio: ['inherit', 'pipe']
+          });
+
+          ansible.stdout.on('data', (data) => {
+            const vpid = ansible.pid
+            insertJobevent(data, vjid, vpid, vcheck);
+          });
+
+          ansible.stderr.on('data', (data) => {
+            console.log(new Date() + 'ipconfig error...');
+          });
+
+          ansible.on('close', (code) => {
+            console.log(new Date() + 'ADHOC command complete...' + code);
+            updateJobevent(code, vjid);
+            // DELETE Directory
+            rmDir(vdic);
+            res.json(db.resultMsg('a001', vjdata));
+          });
+        }).catch((err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
+      }).catch((err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    } else if (resultAHT.use_yn == 'N') {
+      console.log('### This Ad-Hoc Template does not allow to use');
+      res.json(db.resultMsg('a502', req.body));
+    } else {
+      console.log('Template ID does not exist in database');
+      res.json(db.resultMsg('a501', req.body));
+    }
+  }).catch((err) => {
+    if (err) {
+      console.error(err);
+    }
+  });
+});
 /* PUT Job Event (Update) */
 router.put('/:seq', (req, res, next) => {
   res.json(db.resultMsg('900', req.body));
@@ -282,72 +405,47 @@ router.delete('/:seq', (req, res, next) => {
 });
 
 /* GET Job Event (SELECT ONE) */
-router.get('/o', (req, res, next) => {
-  let vseq = req.query.seq ? addslashes(req.query.seq) : "";
+router.get('/:seq', (req, res, next) => {
+  let seq = req.params.seq ? addslashes(req.params.seq) : "";
 
-  if (vseq) {
-    if (isNaN(vseq) === false) {
-      let stringQuery = sql.getOneRow(vseq)
-
-      db.query(stringQuery, [], (err, rows) => {
-        if (err) {
-          return next(err);
-        }
-        if (rows.rows == "") {
-          res.json(db.resultMsg('500'[2], rows.rows));
-        } else {
-          // console.log(db.resultMsg('200'[0], rows.rows[0]));
-          res.json(db.resultMsg('200'[0], rows.rows));
-        }
-      });
-    } else {
-      console.log("Type error! Please input Integer type ID!!");
-      res.json(db.resultMsg('403'[0], req.body));
+  db.query(sql.getOneRow(), [seq], (err, rows) => {
+    if (err) {
+      return next(err);
     }
-  } else {
-    console.log("Job Event ID does not exist!!");
-    res.json(db.resultMsg('403'[0], req.body));
-  }
-
+    res.json(db.resultMsg('a001', rows.rows));
+  });
 });
 
 /* GET Job Event listing. */
 router.get('/', (req, res, next) => {
-  let vdata = {};
-  let vpage = req.query.page ? addslashes(req.query.page) : "";
-  let vpageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
+  let data = {};
+  let page = req.query.page ? addslashes(req.query.page) : "";
+  let pageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
 
-  if (vpage == "" || vpage < 1) {
-    vpage = 1;
+  if (page == "" || page < 1) {
+    page = 1;
   }
-  if (vpageSize == "" || vpageSize < 1) {
-    vpageSize = 15;
+  if (pageSize == "" || pageSize < 1) {
+    pageSize = 15;
   }
-  let vstart = (vpage - 1) * vpageSize;
+  let start = (page - 1) * pageSize;
 
-  let stringQuery = sql.getList(vpageSize, vstart)
-
-  let imsi = db.query(stringQuery, [], (err, rows) => {
+  db.query(sql.getList(), [pageSize, start], (err, rows) => {
     if (err) {
       return next(err);
     }
 
     totalCount().then((result) => {
-      vdata['rowCount'] = rows.rowCount;
-      vdata['totalCount'] = result;
-      vdata['page'] = vpage;
-      vdata['pageSize'] = vpageSize
-      vdata['list'] = rows.rows;
+      data['rowCount'] = rows.rowCount;
+      data['totalCount'] = result;
+      data['page'] = page;
+      data['pageSize'] = pageSize
+      data['list'] = rows.rows;
 
-      if (vdata.rowCount < 1) {
-        res.json(db.resultMsg('500'[2], rows.rows));
-      } else {
-        // console.log(db.resultMsg('200'[0], vdata));
-        res.json(db.resultMsg('200'[0], vdata));
-      }
+      res.json(db.resultMsg('a001', data));
     }).catch((err) => {
       if (err) {
-        console.log(err);
+        console.error(err);
       }
     });
   });
@@ -357,11 +455,8 @@ router.get('/', (req, res, next) => {
 router.get('/Action', (req, res, next) => {});
 
 function totalCount() {
-  let vdata = {};
-  let stringQuery = sql.action()
-
   return new Promise((resolve, reject) => {
-    db.query(stringQuery, [], (err, rows) => {
+    db.query(sql.action(), [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -373,11 +468,9 @@ function totalCount() {
 }
 
 
-function selectJobTemplate(vtid) {
-  let stringQuery = sql.selectJobTempQuery(vtid)
-
+function selectJobTemplate(tid) {
   return new Promise((resolve, reject) => {
-    db.query(stringQuery, [], (err, rows) => {
+    db.query(sql.selectJobTempQuery(), [tid], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -386,11 +479,9 @@ function selectJobTemplate(vtid) {
   });
 }
 
-function selectAHTemplate(vtid) {
-  let stringQuery = sql.selectAHTempQuery(vtid)
-
+function selectAHTemplate(tid) {
   return new Promise((resolve, reject) => {
-    db.query(stringQuery, [], (err, rows) => {
+    db.query(sql.selectAHTempQuery(), [tid], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -400,11 +491,9 @@ function selectAHTemplate(vtid) {
   });
 }
 
-function selectCred(vcname) {
-  let stringQuery = sql.selectCredQuery(vcname)
-
+function selectCred(cname) {
   return new Promise((resolve, reject) => {
-    db.query(stringQuery, [], (err, rows) => {
+    db.query(sql.selectCredQuery(), [cname], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -414,10 +503,9 @@ function selectCred(vcname) {
   });
 }
 
-function selectHosts(viid) {
-  let stringQuery = sql.selectHostQuery(viid)
+function selectHosts(iid) {
   return new Promise((resolve, reject) => {
-    db.query(stringQuery, [], (err, rows) => {
+    db.query(sql.selectHostQuery(), [iid], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -435,14 +523,13 @@ function selectHosts(viid) {
           imsi += rows.rows[i].ip + "\n";
         }
       }
-      // console.log('######[host] :' + imsi);
       resolve(imsi);
     });
   });
 }
 
-function mkDir(vdic) {
-  fs.mkdir(vdic, (err) => {
+function mkDir(dic) {
+  fs.mkdir(dic, (err) => {
     if (err) {
       console.log('fail to create directory, ', err);
     }
@@ -450,8 +537,8 @@ function mkDir(vdic) {
   });
 }
 
-function rmDir(vdic) {
-  rimraf(vdic, (err) => {
+function rmDir(dic) {
+  rimraf(dic, (err) => {
     if (err) {
       return reject(err);
     }
@@ -459,18 +546,18 @@ function rmDir(vdic) {
   });
 }
 
-function writeFile(vfilename, vdata) {
+function writeFile(filename, data) {
   try {
-    fs.writeFileSync(vfilename, vdata, 'utf8');
+    fs.writeFileSync(filename, data, 'utf8');
     console.log('### successfully write into the file');
   } catch (err) {
     console.log(err);
   }
 }
 
-function fileChmod(vpath, vchmode) {
+function fileChmod(path, chmode) {
   try {
-    fs.chmodSync(vpath, vchmode);
+    fs.chmodSync(path, chmode);
     console.log('### successfully change the file mode');
   } catch (err) {
     console.log(err);
@@ -478,11 +565,8 @@ function fileChmod(vpath, vchmode) {
 }
 
 function selectJid() {
-  let vdata = {};
-  let stringQuery = sql.selectJidQuery()
-
   return new Promise((resolve, reject) => {
-    db.query(stringQuery, [], (err, rows) => {
+    db.query(sql.selectJidQuery(), [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -493,10 +577,10 @@ function selectJid() {
   });
 }
 
-function insertJob(vdata) {
-  let stringQuery = sql.insertJobQuery(vdata)
+function insertJob(data) {
   return new Promise((resolve, reject) => {
-    db.query(stringQuery, [], (err, rows) => {
+    db.query(jobSql.post(), [data.iid, data.iname, data.tid
+                            , data.tname, data.chk_temp], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -510,8 +594,7 @@ function insertJob(vdata) {
 
 function getJid() {
   return new Promise((resolve, reject) => {
-    let stringQuery = sql.getJidQuery()
-    db.query(stringQuery, [], (err, rows) => {
+    db.query(sql.getJidQuery(), [], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -524,8 +607,7 @@ function getJid() {
 function insertJobevent(data, vjid, vpid, vcheck) {
 
   return new Promise((resolve, reject) => {
-    let stringQuery = sql.insertJobeventQuery(vjid, vpid, vcheck, data)
-    db.query(stringQuery, [], (err, rows) => {
+    db.query( sql.insertJobeventQuery(data), [vjid, vpid, vcheck], (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -535,9 +617,8 @@ function insertJobevent(data, vjid, vpid, vcheck) {
 }
 
 function updateJobevent(vcode, vjid) {
-  let stringQuery = sql.updateJobeventQuery(vcode, vjid)
 
-  db.query(stringQuery, [], (err, rows) => {
+  db.query(sql.updateJobeventQuery(), [vcode, vjid], (err, rows) => {
     if (err) {
       return reject(err);
     }
