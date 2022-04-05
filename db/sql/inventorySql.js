@@ -1,41 +1,35 @@
 class sql {
-  post (vname, vcontent, vuse_yn) {
+  post () {
     let stringQuery = "";
     stringQuery += " INSERT INTO t_inventory ( name, content, total_hosts, use_yn, create_id ) ";
-    stringQuery += " VALUES ( \'" + vname + "\',\'" + vcontent + "\', 0,\'" + vuse_yn + "\', \'admin\')";
+    stringQuery += " VALUES ( $1, $2, 0, $3, \'admin\')";
     return stringQuery
   }
   
-  update (vname, vcontent, vuse_yn, vseq) {
+  update () {
     let stringQuery = "";
     stringQuery += " UPDATE t_inventory SET ";
     stringQuery += " update_dt = now() ";
     stringQuery += " , update_id = \'admin\' ";
-    if (vname) {
-      stringQuery += " , name = \'" + vname + "\' ";
-    }
-    if (vcontent) {
-      stringQuery += " , content = \'" + vcontent + "\' ";
-    }
-    if (vuse_yn) {
-      stringQuery += " , use_yn = \'" + vuse_yn + "\' ";
-    }
-    stringQuery += " WHERE iid = " + vseq + " ";
+    stringQuery += " , name = $1 ";
+    stringQuery += " , content = $2 ";
+    stringQuery += " , use_yn = $3 ";
+    stringQuery += " WHERE iid = $4 ";
     return stringQuery
   }
   
-  delete (item) {
+  delete () {
     let stringQuery = "";
     stringQuery += " DELETE FROM t_inventory ";
-    stringQuery += " WHERE iid IN ( " + item + " ) ";
+    stringQuery += " WHERE iid IN ( $1::int[] ) ";
     return stringQuery
   }
   
-  getOneRow (vseq) {
+  getOneRow () {
     let stringQuery = "";
     stringQuery += " SELECT iid, name, content, total_hosts, use_yn, create_dt , create_id, update_dt, update_id "
     stringQuery += " FROM t_inventory "
-    stringQuery += " WHERE iid = " + vseq + " "
+    stringQuery += " WHERE iid = $1 "
     return stringQuery
   }
   
@@ -55,7 +49,7 @@ class sql {
     return stringQuery
   }
   
-  detailCHstList (vseq) {
+  detailCHstList () {
     let stringQuery = "";
     stringQuery += " SELECT e.hid, e.name, e.domain, e.ip, e.os, to_char(e.create_dt, \'yyyy-mm-dd HH24:mi:ss\') as create_dt ";
     stringQuery += " FROM t_inventory i  ";
@@ -65,7 +59,7 @@ class sql {
     stringQuery += "                  ORDER BY h.hid asc) e ";
     stringQuery += " ON i.iid = e.iid ";
     stringQuery += " GROUP BY i.iid, e.hid, e.name, e.domain, e.ip, e.os, e.create_dt ";
-    stringQuery += " HAVING i.iid = " + vseq + " ";
+    stringQuery += " HAVING i.iid = $1 ";
     stringQuery += " ORDER BY e.name ASC ";
     return stringQuery
   }
@@ -84,7 +78,7 @@ class sql {
     let stringQuery = "";
     stringQuery += " SELECT h.hid as hid, h.name, h.content, h.domain, h.os, h.ip, h.use_yn, to_char(h.create_dt, \'yyyy-mm-dd hh24:mi:ss\') as create_dt , h.create_id, ih.hid as chkHid";
     stringQuery += " from t_hosts h, t_Ivt_hst ih ";
-    stringQuery += " where h.hid = ih.hid and ih.iid = " + viid;
+    stringQuery += " where h.hid = ih.hid and ih.iid = $1 ";
     stringQuery += " ORDER BY h.name ASC ";
     return stringQuery
   }
@@ -101,7 +95,7 @@ class sql {
     let stringQuery = "";
     stringQuery += " SELECT total_hosts ";
     stringQuery += " FROM t_inventory ";
-    stringQuery += " WHERE iid = " + viid;
+    stringQuery += " WHERE iid = $1 ";
     return stringQuery
   }
   

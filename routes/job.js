@@ -2,29 +2,30 @@ const express = require('express');
 const router = express.Router();
 
 const db = require('../db/db.js');
-const sql = require('../db/sql/jobSql.js')
+const sql = require('../db/sql/jobSql.js');
+const jobBuilder = require('../dto/jobBuilder');
 const addslashes = require('../db/addslashes.js');
 
 /* POST Job (Insert) */
 router.post('/', (req, res, next) => {
-	let viid = req.body.iid ? addslashes(req.body.iid) : "";
-	let viname = req.body.iname ? addslashes(req.body.iname) : "";
-	let vtid = req.body.tid ? addslashes(req.body.tid) : "";
-	let vtname = req.body.tname ? addslashes(req.body.tname) : "";
-	let vstatus = req.body.status ? addslashes(req.body.status) : "";
+	// let viid = req.body.iid ? addslashes(req.body.iid) : "";
+	// let viname = req.body.iname ? addslashes(req.body.iname) : "";
+	// let vtid = req.body.tid ? addslashes(req.body.tid) : "";
+	// let vtname = req.body.tname ? addslashes(req.body.tname) : "";
+	// let vstatus = req.body.status ? addslashes(req.body.status) : "";
 
-	let stringQuery = sql.post(viid, viname, vtid, vtname)
-	db.query(stringQuery, [], (err, rows) => {
-		if (err) {
-			return next(err);
-		}
+	const dto = new jobBuilder().setIid(addslashes(req.body.iid))
+								.setIname(addslashes(req.body.iname))
+								.setTid(addslashes(req.body.tid))
+								.setTname(addslashes(req.body.tname))
+								.setStatus(addslashes(req.body.status))
+								.build();
 
-		if (rows.rowCount < 1) {
-			res.json(db.resultMsg('403'[1], req.body));
-		} else {
-			delete req.body.mpw;
-			res.json(db.resultMsg('200'[0], req.body));
-		}
+	db.query(sql.post(), [dto.iid, dto.iname, dto.tid
+							, dto.tname, dto.status], (err, rows) => {
+		if (err) return next(err);
+
+		res.json(db.resultMsg('a001', req.body));
 	});
 });
 
@@ -39,76 +40,54 @@ router.delete('/:seq', (req, res, next) => {
 });
 
 /* GET Job (SELECT ONE) */
-router.get('/o', (req, res, next) => {
-	let vseq = req.query.seq ? addslashes(req.query.seq) : "";
+router.get('/:seq', (req, res, next) => {
+	const seq = req.params.seq ? addslashes(req.params.seq) : "";
 
-	if (vseq) {
-		if (isNaN(vseq) === false) {
-			let stringQuery = sql.getOneRow(vseq)
-
-			db.query(stringQuery, [], (err, rows) => {
-				if (err) {
-					return next(err);
-				}
-				if (rows.rows == "") {
-					res.json(db.resultMsg('500'[2], rows.rows[0]));
-				} else {
-					// console.log(db.resultMsg('200'[0], rows.rows[0]));
-					res.json(db.resultMsg('200'[0], rows.rows[0]));
-				}
-			});
-
-		} else {
-			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('403'[0], req.body));
+	db.query(sql.getOneRow(), [seq], (err, rows) => {
+		if (err) {
+			return next(err);
 		}
-	} else {
-		console.log("Job ID does not exist!!");
-		res.json(db.resultMsg('403'[0], req.body));
-	}
-
+		res.json(db.resultMsg('a001', rows.rows[0]));
+	});
 });
 
 /* GET Job listing. */
 router.get('/', (req, res, next) => {
-	let vdata = {};
-	let vpage = req.query.page ? addslashes(req.query.page) : "";
-	let vpageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
-	let vtcheck = req.query.chk_temp ? addslashes(req.query.chk_temp) : "";
-	let vtname = req.query.tname ? addslashes(req.query.tname) : "";
-	let viname = req.query.iname ? addslashes(req.query.iname) : "";
-	let vstatus = req.query.status ? addslashes(req.query.status) : "";
+	let data = {};
+	const page = req.query.page ? addslashes(req.query.page) : "";
+	const pageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
+	const tname = req.query.tname ? addslashes(req.query.tname) : "";
+	const iname = req.query.iname ? addslashes(req.query.iname) : "";
+	const status = req.query.status ? addslashes(req.query.status) : "";
+	// Todo variable check
+	// const tcheck = req.query.chk_temp ? addslashes(req.query.chk_temp) : "";
 
-	if (vpage == "" || vpage < 1) {
-		vpage = 1;
+	if (page == "" || page < 1) {
+		page = 1;
 	}
-	if (vpageSize) {
-		if (vpageSize == "" || vpageSize < 1) {
-			vpageSize = 15;
+	if (pageSize) {
+		if (pageSize == "" || pageSize < 1) {
+			pageSize = 15;
 		}
 	}
 
-	let vstart = (vpage - 1) * vpageSize;
+	const start = (page - 1) * pageSize;
 
-	let stringQuery = sql.getList(vtname, viname, vstatus, vpageSize, vstart)
-
-
-	let imsi = db.query(stringQuery, [], (err, rows) => {
+	db.query(sql.getList(tname, iname, status), [pageSize, start], (err, rows) => {
 		if (err) {
 			return next(err);
 		}
 		totalCount(req).then((result) => {
-			vdata['rowCount'] = rows.rowCount;
-			vdata['totalCount'] = result;
-			vdata['page'] = vpage;
-			vdata['pageSize'] = vpageSize;
-			vdata['list'] = rows.rows;
+			data['rowCount'] = rows.rowCount;
+			data['totalCount'] = result;
+			data['page'] = page;
+			data['pageSize'] = pageSize;
+			data['list'] = rows.rows;
 
-			if (vdata.list == "") {
+			if (data.list == "") {
 				res.json(db.resultMsg('500'[2], rows.rows[0]));
 			} else {
-				// console.log(db.resultMsg('200'[0], vdata));
-				res.json(db.resultMsg('200'[0], vdata));
+				res.json(db.resultMsg('a001', data));
 			}
 		}).catch((err) => {
 			if (err) {
@@ -119,19 +98,17 @@ router.get('/', (req, res, next) => {
 });
 
 function totalCount(req) {
-	let vdata = {};
-	let vtname = req.query.tname ? addslashes(req.query.tname) : "";
-	let viname = req.query.iname ? addslashes(req.query.iname) : "";
-	let vstatus = req.query.status ? addslashes(req.query.status) : "";
+	let tname = req.query.tname ? addslashes(req.query.tname) : "";
+	let iname = req.query.iname ? addslashes(req.query.iname) : "";
+	let status = req.query.status ? addslashes(req.query.status) : "";
 
-	let stringQuery = sql.totalCount(vtname, viname, vstatus)
+	let stringQuery = sql.totalCount(tname, iname, status)
 
 	return new Promise((resolve, reject) => {
 		db.query(stringQuery, [], (err, rows) => {
 			if (err) {
 				return reject(err);
 			}
-			// console.log("total func: " + rows.rows[0].total);
 			resolve(rows.rows[0].total);
 		});
 	});

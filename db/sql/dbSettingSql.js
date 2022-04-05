@@ -103,10 +103,10 @@ class sql {
     stringQuery += " status 	varchar(1), ";
     stringQuery += " start_dt 	timestamp, ";
     stringQuery += " end_dt 	timestamp, ";
-    stringQuery += " forks	int	Not Null, ";
-    stringQuery += " verb	int, ";
-    stringQuery += " variables	text, ";
-    stringQuery += " limits 	varchar(1024) ";
+    // stringQuery += " forks	int	Not Null, ";
+    // stringQuery += " verb	int, ";
+    // stringQuery += " variables	text, ";
+    // stringQuery += " limits 	varchar(1024) ";
     stringQuery += " ) ";
     return stringQuery
   }

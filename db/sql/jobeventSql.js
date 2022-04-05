@@ -2,7 +2,7 @@ const addslashes = require('../addslashes.js');
 
 class sql {
 
-  getOneRow (vseq) {
+  getOneRow () {
     let stringQuery = "";
     stringQuery += " SELECT je.*, j.end_dt  ";
     stringQuery += " from (  ";
@@ -33,7 +33,7 @@ class sql {
   
   }
   
-  selectJobTempQuery (vtid) {
+  selectJobTempQuery () {
     let stringQuery = "";
     stringQuery += " SELECT tid, name, content, iid, iname, playbook, forks, limits, verb, variables, cname, use_yn ";
     stringQuery += " FROM  t_jobtemps ";
@@ -41,7 +41,7 @@ class sql {
     return stringQuery
   }
   
-  selectAHTempQuery (vtid) {
+  selectAHTempQuery () {
     let stringQuery = "";
     stringQuery += " SELECT tid, name, content, iid, iname, module, argument, forks, limits, verb, variables, cname, use_yn ";
     stringQuery += " FROM  t_adhoc ";
@@ -49,7 +49,7 @@ class sql {
     return stringQuery
   }
   
-  selectCredQuery (vcname) {
+  selectCredQuery () {
     let stringQuery = "";
     stringQuery += " SELECT mid, mpw, private_key ";
     stringQuery += " FROM  t_credentials ";
@@ -57,7 +57,7 @@ class sql {
     return stringQuery
   }
   
-  selectHostQuery (viid) {
+  selectHostQuery () {
     let stringQuery = "";
     stringQuery += " select h.name, h.domain, h.ip ";
     stringQuery += " from t_hosts h, t_Ivt_hst i ";
@@ -73,12 +73,13 @@ class sql {
     return stringQuery
   }
   
-  insertJobQuery (vdata) {
-    let stringQuery = "";
-    stringQuery += " INSERT INTO t_jobs ( iid, iname, tid, tname, chk_temp, forks, verb, variables, limits, status, start_dt ) ";
-    stringQuery += " VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, \'P\', now() ) ";
-    return stringQuery
-  }
+  // Delete by Table edit
+  // insertJobQuery () {
+  //   let stringQuery = "";
+  //   stringQuery += " INSERT INTO t_jobs ( iid, iname, tid, tname, chk_temp, forks, verb, variables, limits, status, start_dt ) ";
+  //   stringQuery += " VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, \'P\', now() ) ";
+  //   return stringQuery
+  // }
   
   getJidQuery () {
     let stringQuery = "";
@@ -86,7 +87,7 @@ class sql {
     return stringQuery
   }
   
-  insertJobeventQuery (vjid, vpid, vcheck, data) {
+  insertJobeventQuery (data) {
     let stringQuery = "";
     stringQuery = " INSERT INTO t_jobevents ( jid, pid, chk_temp, create_dt, stdout ) ";
     stringQuery += " VALUES ( $1, $2, $3, NOW(), \'" + addslashes(data) + "\') ";

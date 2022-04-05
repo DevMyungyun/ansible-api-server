@@ -2,5 +2,7 @@
 	"a001": "success",
 	"a002": "process kill success",
 	"a003": "there is no data",
+	"a501": "Template ID does not exist in database",
+	"a502": "Template does not allow to use",
 	"a900": "not supported"
 }
