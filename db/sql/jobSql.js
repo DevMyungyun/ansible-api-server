@@ -1,8 +1,8 @@
 class sql {
 	post () {
 		let stringQuery = "";
-		stringQuery += " INSERT INTO t_jobs ( iid, iname, tid, tname, chk_temp, status, start_dt ) ";
-		stringQuery += " VALUES ( $1, $2, $3, $4, $5, 'P', now())";
+		stringQuery += " INSERT INTO t_jobs ( iid, iname, tid, tname, chk_temp, forks, verb, variables, limits, status, start_dt ) ";
+		stringQuery += " VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, 'P', now())";
 		return stringQuery
 	}
 	

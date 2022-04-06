@@ -1,188 +1,145 @@
 const express = require('express');
 const router = express.Router();
 
-
 const db = require('../db/db.js');
-const sql = require('../db/sql/jobtempSql.js')
+const jobTempBuilder = require('../dto/jobTempBuilder');
+const sql = require('../db/sql/jobtempSql.js');
 const addslashes = require('../db/addslashes.js');
-
 
 
 // Post Jobtemp (Insert)
 router.post('/', (req, res, next) => {
-	let vname = req.body.name ? addslashes(req.body.name) : "";
-	let vcontent = req.body.content ? addslashes(req.body.content) : "";
-	let viid = req.body.iid ? addslashes(req.body.iid) : "";
-	let viname = req.body.iname ? addslashes(req.body.iname) : "";
-	let vcname = req.body.cname ? addslashes(req.body.cname) : "";
-	let vplaybook = req.body.playbook ? addslashes(req.body.playbook) : "";
-	let vforks = req.body.forks ? addslashes(req.body.forks) : "";
-	let vlimits = req.body.limits ? addslashes(req.body.limits) : "";
-	let vverb = req.body.verb ? addslashes(req.body.verb) : "";
-	let vvariables = req.body.variables ? addslashes(req.body.variables) : "---";
-	let vuse_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "Y";
+	// let vname = req.body.name ? addslashes(req.body.name) : "";
+	// let vcontent = req.body.content ? addslashes(req.body.content) : "";
+	// let viid = req.body.iid ? addslashes(req.body.iid) : "";
+	// let viname = req.body.iname ? addslashes(req.body.iname) : "";
+	// let vcname = req.body.cname ? addslashes(req.body.cname) : "";
+	// let vplaybook = req.body.playbook ? addslashes(req.body.playbook) : "";
+	// let vforks = req.body.forks ? addslashes(req.body.forks) : "";
+	// let vlimits = req.body.limits ? addslashes(req.body.limits) : "";
+	// let vverb = req.body.verb ? addslashes(req.body.verb) : "";
+	// let vvariables = req.body.variables ? addslashes(req.body.variables) : "---";
+	// let vuse_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "Y";
 
-	// console.log('#####req.body.variables : ##' + req.body.variables);
-	// console.log('#####addslashes(req.body.variables) : ##' + addslashes(req.body.variables));
+	const dto = new jobTempBuilder().setName(addslashes(body.name))
+									.setContent(addslashes(body.content))
+									.setIid(addslashes(body.iid))
+									.setIname(addslashes(body.iname))
+									.setCname(addslashes(body.cname))
+									.setModule( addslashes(body.module))
+									.setVerb(addslashes(body.verb))
+									.setForks(body.forks ? addslashes(body.forks) : 1)
+									.setLimits(body.limits ? addslashes(body.limits) : "")
+									.setVariables(body.variables ? addslashes(body.variables) : "---")
+									.setUse_yn(body.use_yn ? addslashes(body.use_yn) : "Y")
+									.build();
 
-	let stringQuery = sql.post(vname, vcontent, viid, viname, vcname, vplaybook, vforks, vlimits, vverb, vvariables, vuse_yn)
-	db.query(stringQuery, [], (err, rows) => {
-		if (err) {
-			return next(err);
-		}
-
-		if (rows.rowCount < 1) {
-			res.json(db.resultMsg('403'[1], req.body));
-		} else {
-			delete req.body.mpw;
-			res.json(db.resultMsg('200'[0], req.body));
-		}
+	db.query(sql.post(), [dto.name, dto.content, dto.iid
+						, dto.iname, dto.cname, dto.module
+						, dto.forks, dto.limits	, dto.verb
+						, dto.variables, dto.use_yn], (err, rows) => {
+		if (err) return next(err);
+		res.json(db.resultMsg('a001', req.body));
 	});
 });
 
 /* PUT Jobtemp (Update) */
-router.put('/', (req, res, next) => {
-	let vseq = req.query.seq ? addslashes(req.query.seq) : "";
-	let vname = req.body.name ? addslashes(req.body.name) : "";
-	let vcontent = req.body.content ? addslashes(req.body.content) : "";
-	let viid = req.body.iid ? addslashes(req.body.iid) : "";
-	let viname = req.body.iname ? addslashes(req.body.iname) : "";
-	let vcname = req.body.cname ? addslashes(req.body.cname) : "";
-	let vplaybook = req.body.playbook ? addslashes(req.body.playbook) : "";
-	let vforks = req.body.forks ? addslashes(req.body.forks) : "";
-	let vlimits = req.body.limits ? addslashes(req.body.limits) : "";
-	let vverb = req.body.verb ? addslashes(req.body.verb) : "";
-	let vvariables = req.body.variables ? addslashes(req.body.variables) : "---";
-	let vuse_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "Y";
+router.put('/:seq', (req, res, next) => {
+	let seq = req.params.seq ? addslashes(req.params.seq) : "";
+	// let vname = req.body.name ? addslashes(req.body.name) : "";
+	// let vcontent = req.body.content ? addslashes(req.body.content) : "";
+	// let viid = req.body.iid ? addslashes(req.body.iid) : "";
+	// let viname = req.body.iname ? addslashes(req.body.iname) : "";
+	// let vcname = req.body.cname ? addslashes(req.body.cname) : "";
+	// let vplaybook = req.body.playbook ? addslashes(req.body.playbook) : "";
+	// let vforks = req.body.forks ? addslashes(req.body.forks) : "";
+	// let vlimits = req.body.limits ? addslashes(req.body.limits) : "";
+	// let vverb = req.body.verb ? addslashes(req.body.verb) : "";
+	// let vvariables = req.body.variables ? addslashes(req.body.variables) : "---";
+	// let vuse_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "Y";
 
+	
+	const dto = new jobTempBuilder().setName(addslashes(body.name))
+									.setContent(addslashes(body.content))
+									.setIid(addslashes(body.iid))
+									.setIname(addslashes(body.iname))
+									.setCname(addslashes(body.cname))
+									.setModule( addslashes(body.module))
+									.setVerb(addslashes(body.verb))
+									.setForks(body.forks ? addslashes(body.forks) : 1)
+									.setLimits(body.limits ? addslashes(body.limits) : "")
+									.setVariables(body.variables ? addslashes(body.variables) : "---")
+									.setUse_yn(body.use_yn ? addslashes(body.use_yn) : "Y")
+									.build();
 
-	if (vseq) {
-		if (isNaN(vseq) === false) {
-			let stringQuery = sql.update(vname, vcontent, viid, viname, vcname, vplaybook, vforks, vlimits, vverb, vvariables, vuse_yn, vseq)
-			db.query(stringQuery, [], (err, rows) => {
-				if (err) {
-					return next(err);
-				}
-
-				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('403'[1], req.body));
-				} else {
-					res.json(db.resultMsg('200'[0], req.body));
-				}
-			});
-		} else {
-			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('403'[0], req.body));
+	db.query(sql.update, [dto.name, dto.content, dto.iid
+		, dto.iname, dto.cname, dto.module
+		, dto.forks, dto.limits	, dto.verb
+		, dto.variables, dto.use_yn, seq], (err, rows) => {
+		if (err) {
+			return next(err);
 		}
-	} else {
-		console.log("Job template ID does not exist!!");
-		res.json(db.resultMsg('403'[0], req.body));
-	}
-
+		res.json(db.resultMsg('a001', req.body));
+			});
 });
 
 /* DELETE Jobtemp (delete) */
-router.delete('/', (req, res, next) => {
-	let vseq = req.query.seq ? addslashes(req.query.seq) : "";
+router.delete('/:seq', (req, res, next) => {
+	let seq = req.params.seq ? addslashes(req.params.seq) : "";
 
-	if (vseq) {
-		if (typeof vseq === 'string') {
-			let stringQuery = sql.delete(vseq)
-			db.query(stringQuery, [], (err, rows) => {
-				if (err) {
-					return next(err);
-				}
-
-				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('403'[1], req.body));
-				} else {
-					res.json(db.resultMsg('200'[0], req.body));
-				}
-			});
-
-		} else {
-			console.log("Type error! Please input String type ID!!");
-			res.json(db.resultMsg('403'[0], req.body));
-		}
-	} else {
-		console.log("Job template does not exist!!");
-		res.json(db.resultMsg('403'[0], req.body));
-	}
-
+	db.query(sql.delete(), [seq], (err, rows) => {
+		if (err) return next(err);
+			res.json(db.resultMsg('a001', req.body));
+	});
 });
 
 /* GET Jobtemps (SELECT ONE) */
-router.get('/o', (req, res, next) => {
-	let vseq = req.query.seq ? addslashes(req.query.seq) : "";
+router.get('/:seq', (req, res, next) => {
+	let seq = req.params.seq ? addslashes(req.params.seq) : "";
 
-	if (vseq) {
-		if (isNaN(vseq) === false) {
-			let stringQuery = sql.getOneRow(vseq)
-			db.query(stringQuery, [], (err, rows) => {
-				if (err) {
-					return next(err);
-				}
-				if (rows.rowCount < 1) {
-					res.json(db.resultMsg('500'[2], rows.rows[0]));
-				} else {
-					res.json(db.resultMsg('200'[0], rows.rows[0]));
-				}
-			});
-		} else {
-			console.log("Type error! Please input Integer type ID!!");
-			res.json(db.resultMsg('403'[0], req.body));
+	db.query(sql.getOneRow, [seq], (err, rows) => {
+		if (err) {
+			return next(err);
 		}
-	} else {
-		console.log("Job template ID does not exist!!");
-		res.json(db.resultMsg('403'[0], req.body));
-	}
-
+			res.json(db.resultMsg('a001', rows.rows[0]));
+	});
 });
 
 /* GET Jobtemps listing. */
 router.get('/', (req, res, next) => {
-	let vdata = {};
-	let vpage = req.query.page ? addslashes(req.query.page) : "";
-	let vpageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
-	let vname = req.query.name ? addslashes(req.query.name) : "";
+	let data = {};
+	let page = req.query.page ? addslashes(req.query.page) : "";
+	let pageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
+	let name = req.query.name ? addslashes(req.query.name) : "";
 
-	if (vpage == "" || vpage < 1) {
-		vpage = 1;
+	if (page == "" || page < 1) {
+		page = 1;
 	}
-	if (vpageSize == "" || vpageSize < 1) {
-		vpageSize = 15;
+	if (pageSize == "" || pageSize < 1) {
+		pageSize = 15;
 	}
-	let vstart = (vpage - 1) * vpageSize;
+	let start = (page - 1) * pageSize;
 
-	let stringQuery = sql.getList(vname)
-	let imsi = db.query(stringQuery, [], (err, rows) => {
-		if (err) {
-			return next(err);
-		}
+	let imsi = db.query(sql.getList(name), [pageSize, page], (err, rows) => {
+		if (err) return next(err);
 
 		totalCount(req).then((result) => {
-			vdata['rowCount'] = rows.rowCount;
-			vdata['totalCount'] = result;
-			vdata['page'] = vpage;
-			vdata['pageSize'] = vpageSize;
-			vdata['list'] = rows.rows;
+			data['rowCount'] = rows.rowCount;
+			data['totalCount'] = result;
+			data['page'] = page;
+			data['pageSize'] = pageSize;
+			data['list'] = rows.rows;
 
-			if (vdata.rowCount < 1) {
-				res.json(db.resultMsg('500'[2], rows.rows));
-			} else {
-				// console.log(db.resultMsg('200'[0], vdata));
-				res.json(db.resultMsg('200'[0], vdata));
-			}
+			res.json(db.resultMsg('a001', data));
 		}).catch((err) => {
 			if (err) {
-				console.log(err);
+				console.error(err);
 			}
 		});
 	});
 });
 
 function totalCount(req) {
-	let vdata = {};
 	let vname = req.query.name ? addslashes(req.query.name) : "";
 	let stringQuery = sql.totalCount(vname)
 
@@ -191,7 +148,6 @@ function totalCount(req) {
 			if (err) {
 				return reject(err);
 			}
-			// console.log("total func: " + rows.rows[0].total);
 			resolve(rows.rows[0].total);
 
 		});
