@@ -22,9 +22,6 @@ let vjdata = {};
 /* POST Adhoc Job Event (Insert) */
 router.post('/playbook', (req, res, next) => {
   const vtid = req.body.tid ? addslashes(req.body.tid) : "";
-  // const vran = 'f' + (Math.random() * (1 << 30)).toString(16).replace('.', '');
-  // const vdic = conf.fileStorage + vran;
-  // let vjid = ""
 
   selectJobTemplate(vtid).then((resultJT) => {
     if (resultJT != null && resultJT.use_yn == 'Y') {
@@ -55,7 +52,7 @@ router.post('/adhoc', (req, res, next) => {
       let varg = resultAHT.argument;
 
       const returnCode = jobExecute(next, resultAHT, 'AH', varg);
-      res.json(db.resultMsg(returnCode, tid));
+      res.json(db.resultMsg(returnCode, {'tid': tid}));
 
     } else if (resultAHT.use_yn == 'N') {
       console.log('### This Ad-Hoc Template does not allow to use');
@@ -408,7 +405,7 @@ function insertJobevent(data, vjid, vpid, vcheck) {
 
 function updateJobevent(vcode, vjid) {
 
-  db.query(sql.updateJobeventQuery(), [vcode, vjid], (err, rows) => {
+  db.query(sql.updateJobeventQuery(vcode, vjid), [], (err, rows) => {
     if (err) {
       return reject(err);
     }
