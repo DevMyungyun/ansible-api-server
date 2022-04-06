@@ -27,7 +27,7 @@ router.post('/playbook', (req, res, next) => {
   const tid = req.body.tid ? addslashes(req.body.tid) : "";
 
   selectJobTemplate(tid).then((resultJT) => {
-    if (resultAHT) {
+    if (resultJT === undefined) {
       console.log('>>> Template ID does not exist in database');
       return res.json(db.resultMsg('a501', req.body));
     }
@@ -38,7 +38,7 @@ router.post('/playbook', (req, res, next) => {
     } else if (resultJT.use_yn == 'N') {
       console.log('>>> This Playbook Template does not allow to use');
       return res.json(db.resultMsg('a502', req.body));
-    } 
+    }
   }).catch((err) => {
     if (err) {
       console.log(err);
@@ -52,8 +52,8 @@ router.post('/adhoc', (req, res, next) => {
 
   // ADHOC excute
   selectAHTemplate(tid).then((resultAHT) => {
-    if (resultAHT) {
-      console.log('Template ID does not exist in database');
+    if (resultAHT === undefined) {
+      console.log('>>> Template ID does not exist in database');
       return res.json(db.resultMsg('a501', req.body));
     }
     if (resultAHT.use_yn == 'Y') {
@@ -65,7 +65,7 @@ router.post('/adhoc', (req, res, next) => {
       }));
 
     } else if (resultAHT.use_yn == 'N') {
-      console.log('### This Ad-Hoc Template does not allow to use');
+      console.log('>>> This Ad-Hoc Template does not allow to use');
       return res.json(db.resultMsg('a502', req.body));
     }
   }).catch((err) => {
@@ -171,17 +171,18 @@ async function jobExecute(next, resultT, chk_template, varg) {
     else if (vverb === 4) vverb = '-vvvvv';
     else vverb = '-v'
 
-    let vCredential = credential.mid ? `\nansible_user: ${credential.mid.replace(/\\\\/g, '\\')}` : ``;
-    vCredential += credential.mpw ? `\nansible_password: \'${key.decrypt(credential.mpw, 'utf8')}\'` : ``;
-    vCredential += credential.private_key ? `\nansible_ssh_private_key_file: ${pkUrl}` : ``;
-
     // Directory Create
     await mkDir(vdic);
     // Create hosts file
     await writeFile(inventoryUrl, targetHosts);
 
     // Check Credential
-    if (vCredential !== '') {
+    let vCredential = '';
+    if (credential !== undefined) {
+      vCredential += credential.mid !== undefined ? `\nansible_user: ${credential.mid.replace(/\\\\/g, '\\')}` : ``;
+      vCredential += credential.mpw !== undefined ? `\nansible_password: \'${key.decrypt(credential.mpw, 'utf8')}\'` : ``;
+      vCredential += credential.private_key !== undefined ? `\nansible_ssh_private_key_file: ${pkUrl}` : ``;
+
       await writeFile(pkUrl, key.decrypt(credential.private_key, 'utf8').replace(/\\n/g, '\n'));
       await fileChmod(pkUrl, '600');
     }
@@ -235,13 +236,13 @@ async function jobExecute(next, resultT, chk_template, varg) {
     });
 
     ansible.stderr.on('data', (data) => {
-      console.log(new Date() + 'ipconfig error...');
+      console.log(new Date() + ' : ipconfig error...');
       rmDir(vdic);
       return 'a504';
     });
 
     ansible.on('close', (code) => {
-      console.log(new Date() + 'ansible-playbook complete...' + code);
+      console.log(new Date() + ' : ansible-playbook complete...' + code);
       (code, vjid);
       // DELETE Directory
       rmDir(vdic);

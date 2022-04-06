@@ -120,7 +120,7 @@ router.get('/', (req, res, next) => {
 	}
 	let start = (page - 1) * pageSize;
 
-	let imsi = db.query(sql.getList(name), [pageSize, page], (err, rows) => {
+	let imsi = db.query(sql.getList(name), [pageSize, start], (err, rows) => {
 		if (err) return next(err);
 
 		totalCount(req).then((result) => {
