@@ -405,11 +405,14 @@ function insertJobevent(data, vjid, vpid, vcheck) {
 
 function updateJobevent(vcode, vjid) {
 
-  db.query(sql.updateJobeventQuery(vcode, vjid), [], (err, rows) => {
-    if (err) {
-      return reject(err);
-    }
-  });
+  return new Promise((resolve, reject) => {
+    db.query(sql.updateJobeventQuery(vcode, vjid), [], (err, rows) => {
+      if (err) {
+        return reject(err);
+      }
+      console.log(">>> successfully job event update");
+    })
+  })
 }
 
 
