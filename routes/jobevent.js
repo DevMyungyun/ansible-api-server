@@ -233,6 +233,7 @@ async function jobExecute(next, resultT, chk_template, varg) {
 
     ansible.stderr.on('data', (data) => {
       console.log(new Date() + 'ipconfig error...');
+      rmDir(vdic);
       return 'a504';
     });
 
@@ -240,7 +241,7 @@ async function jobExecute(next, resultT, chk_template, varg) {
       console.log(new Date() + 'ansible-playbook complete...' + code);
       updateJobevent(code, vjid);
       // DELETE Directory
-      await rmDir(vdic);
+      rmDir(vdic);
       return 'a004';
     });
   } catch (err) {
