@@ -236,7 +236,12 @@ async function jobExecute(next, resultT, chk_template, varg) {
 
     ansible.stdout.on('data', (data) => {
       const vpid = ansible.pid
-      insertJobevent(data, vjid, vpid, vcheck);
+      try {
+        insertJobevent(data, vjid, vpid, resultT['chk_temp']);  
+      } catch (err) {
+        return 'a504';
+      }
+      
     });
 
     ansible.stderr.on('data', (data) => {
