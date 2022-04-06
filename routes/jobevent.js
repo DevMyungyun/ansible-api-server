@@ -11,6 +11,7 @@ const db = require('../db/db.js');
 const sql = require('../db/sql/jobeventSql.js');
 const jobSql = require('../db/sql/jobSql');
 const addslashes = require('../db/addslashes.js');
+const { resolve } = require('path');
 
 const key = new rsa(conf.rsa);
 
@@ -23,11 +24,12 @@ let vjdata = {};
 router.post('/playbook', (req, res, next) => {
   const tid = req.body.tid ? addslashes(req.body.tid) : "";
 
-  selectJobTemplate(vtid).then((resultJT) => {
+  selectJobTemplate(tid).then((resultJT) => {
     if (resultJT != null && resultJT.use_yn == 'Y') {
       
       const returnCode = jobExecute(next, resultJT, 'AP');
       res.json(db.resultMsg(returnCode, tid));
+
     } else if (resultJT.use_yn == 'N') {
       console.log('### This Playbook Template does not allow to use');
       res.json(db.resultMsg('a502', req.body));
@@ -322,30 +324,37 @@ function selectHosts(iid) {
 }
 
 function mkDir(dic) {
-  fs.mkdir(dic, (err) => {
-    if (err) {
-      console.log('fail to create directory, ', err);
-    }
-    console.log('### successfully create directory');
+  return new Promise((resolve, reject) => {
+    fs.mkdir(dic, (err) => {
+      if (err) {
+        console.log('fail to create directory, ', err);
+        reject(err);
+      }
+      console.log('### successfully create directory');
+    });
   });
 }
 
 function rmDir(dic) {
-  rimraf(dic, (err) => {
-    if (err) {
-      return reject(err);
-    }
-    console.log('### successfully delete directory');
+  return new Promise((resolve, reject) => {
+    rimraf(dic, (err) => {
+      if (err) {
+        return reject(err);
+      }
+      console.error('### successfully delete directory');
+    });
   });
 }
 
 function writeFile(filename, data) {
-  try {
-    fs.writeFileSync(filename, data, 'utf8');
-    console.log('### successfully write into the file');
-  } catch (err) {
-    console.log(err);
-  }
+  return new Promise((resolve, reject) => {
+    try {
+      fs.writeFileSync(filename, data, 'utf8');
+      console.log('### successfully write into the file');  
+    } catch (err) {
+      reject(err) 
+    }
+  });
 }
 
 function fileChmod(path, chmode) {
