@@ -198,7 +198,8 @@ async function jobExecute(next, resultT, chk_template, varg) {
     await writeFile(envUrl, resultT.variables.replace(/\\n/g, '\n') + vCredential);
 
     //Job Insert
-    const jobResult = await insertJob(resultT)
+    const jobResult = await insertJob(resultT);
+    vjid = jobResult;
     vjdata['jid'] = jobResult;
 
     let args = (resultT['chk_temp'] === 'AP') ? ['-i', inventoryUrl, '-e', '@' + envUrl, vforksCli, vverb, playbookUrlorModule] : ['hosts', '-i', inventoryUrl, '-e', '@' + envUrl, vforksCli, vverb, '-m', playbookUrlorModule];
