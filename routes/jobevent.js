@@ -177,6 +177,13 @@ async function jobExecute(next, resultT, chk_template, varg) {
       vverb = '-v'
     }
 
+    // Directory Create
+    await mkDir(vdic);
+    // Create hosts file
+    await writeFile(inventoryUrl, targetHosts);
+    // Create Env file
+    await writeFile(envUrl, resultT.variables.replace(/\\n/g, '\n') + vCredential);
+    
     let vCredential = '';
 
     if (((credential.private_key == null) && (credential.mid && credential.mpw)) ||
@@ -195,13 +202,6 @@ async function jobExecute(next, resultT, chk_template, varg) {
     } else {
       vCredential = '';
     }
-
-    // Directory Create
-    await mkDir(vdic);
-    // Create hosts file
-    await writeFile(inventoryUrl, targetHosts);
-    // Create Env file
-    await writeFile(envUrl, resultT.variables.replace(/\\n/g, '\n') + vCredential);
 
     //Job Insert
     const jobResult = await insertJob(resultT);
