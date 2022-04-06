@@ -11,7 +11,9 @@ const db = require('../db/db.js');
 const sql = require('../db/sql/jobeventSql.js');
 const jobSql = require('../db/sql/jobSql');
 const addslashes = require('../db/addslashes.js');
-const { resolve } = require('path');
+const {
+  resolve
+} = require('path');
 
 const key = new rsa(conf.rsa);
 
@@ -26,7 +28,7 @@ router.post('/playbook', (req, res, next) => {
 
   selectJobTemplate(tid).then((resultJT) => {
     if (resultJT != null && resultJT.use_yn == 'Y') {
-      
+
       const returnCode = jobExecute(next, resultJT, 'AP');
       res.json(db.resultMsg(returnCode, tid));
 
@@ -54,7 +56,9 @@ router.post('/adhoc', (req, res, next) => {
       let varg = resultAHT.argument;
 
       const returnCode = jobExecute(next, resultAHT, 'AH', varg);
-      res.json(db.resultMsg(returnCode, {'tid': tid}));
+      res.json(db.resultMsg(returnCode, {
+        'tid': tid
+      }));
 
     } else if (resultAHT.use_yn == 'N') {
       console.log('### This Ad-Hoc Template does not allow to use');
@@ -183,8 +187,8 @@ async function jobExecute(next, resultT, chk_template, varg) {
     } else if (((credential.mpw != null) && (credential.mid && credential.mpw)) ||
       ((credential.private_key != '') && (credential.mid && credential.mpw))) {
       let decryptPK = key.decrypt(credential.private_key, 'utf8')
-      writeFile(pkUrl, decryptPK.replace(/\\n/g, '\n'));
-      fileChmod(pkUrl, '600');
+      await writeFile(pkUrl, decryptPK.replace(/\\n/g, '\n'));
+      await fileChmod(pkUrl, '600');
       vCredential = '\nansible_ssh_private_key_file: ' + pkUrl +
         '\nansible_user: ' + credential.mid.replace(/\\\\/g, '\\') +
         '\nansible_ssh_password: \'' + key.decrypt(credential.mpw, 'utf8') + '\'\n';
@@ -239,11 +243,11 @@ async function jobExecute(next, resultT, chk_template, varg) {
     ansible.stdout.on('data', (data) => {
       const vpid = ansible.pid
       try {
-        insertJobevent(data, vjid, vpid, resultT['chk_temp']);  
+        insertJobevent(data, vjid, vpid, resultT['chk_temp']);
       } catch (err) {
         return 'a504';
       }
-      
+
     });
 
     ansible.stderr.on('data', (data) => {
@@ -350,20 +354,22 @@ function writeFile(filename, data) {
   return new Promise((resolve, reject) => {
     try {
       fs.writeFileSync(filename, data, 'utf8');
-      console.log('### successfully write into the file');  
+      console.log('### successfully write into the file');
     } catch (err) {
-      reject(err) 
+      reject(err)
     }
   });
 }
 
 function fileChmod(path, chmode) {
-  try {
-    fs.chmodSync(path, chmode);
-    console.log('### successfully change the file mode');
-  } catch (err) {
-    console.log(err);
-  }
+  return new Promise((resolve, reject) => {
+    try {
+      fs.chmodSync(path, chmode);
+      console.log('### successfully change the file mode');
+    } catch (err) {
+      console.log(err);
+    }
+  });
 }
 
 function selectJid() {
@@ -381,9 +387,7 @@ function selectJid() {
 
 function insertJob(data) {
   return new Promise((resolve, reject) => {
-    db.query(jobSql.post(), [data.iid, data.iname, data.tid, data.tname
-                            ,data.chk_temp, data.forks, data.verb
-                            , data.variables, data.limits], (err, rows) => {
+    db.query(jobSql.post(), [data.iid, data.iname, data.tid, data.tname, data.chk_temp, data.forks, data.verb, data.variables, data.limits], (err, rows) => {
       if (err) {
         return reject(err);
       }
