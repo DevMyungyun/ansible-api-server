@@ -163,20 +163,13 @@ async function jobExecute(next, resultT, chk_template, varg) {
     // Host
     const targetHosts = await selectHosts(resultT.iid);
 
-    if (vverb === 0) {
-      vverb = '-v';
-    } else if (vverb === 1) {
-      vverb = '-vv';
-    } else if (vverb === 2) {
-      vverb = '-vvv';
-    } else if (vverb === 3) {
-      vverb = '-vvvv';
-    } else if (vverb === 4) {
-      vverb = '-vvvvv';
-    } else {
-      vverb = '-v'
-    }
-
+    if (vverb === 0) vverb = '-v';
+    else if (vverb === 1) vverb = '-vv';
+    else if (vverb === 2) vverb = '-vvv';
+    else if (vverb === 3) vverb = '-vvvv';
+    else if (vverb === 4) vverb = '-vvvvv';
+    else vverb = '-v'
+    
     // Directory Create
     await mkDir(vdic);
     // Create hosts file
@@ -184,23 +177,13 @@ async function jobExecute(next, resultT, chk_template, varg) {
     // Create Env file
     await writeFile(envUrl, resultT.variables.replace(/\\n/g, '\n') + vCredential);
     
-    let vCredential = '';
+    let vCredential = credential.mid ? `\nansible_user: ${credential.mid.replace(/\\\\/g, '\\')}` : ``;
+    vCredential += credential.mpw ? `\nansible_password: \'${key.decrypt(credential.mpw, 'utf8')}\'\n` : ``;
+    vCredential += credential.private_key ? `\nansible_ssh_private_key_file: ${pkUrl}` : ``;
 
-    if (((credential.private_key == null) && (credential.mid && credential.mpw)) ||
-      ((credential.private_key == '') &&
-        (credential.mid && credential.mpw))) {
-      vCredential = '\nansible_user: ' + credential.mid.replace(/\\\\/g, '\\') +
-        '\nansible_password: \'' + key.decrypt(credential.mpw, 'utf8') + '\'\n';
-    } else if (((credential.mpw != null) && (credential.mid && credential.mpw)) ||
-      ((credential.private_key != '') && (credential.mid && credential.mpw))) {
-      let decryptPK = key.decrypt(credential.private_key, 'utf8')
+    if(vCredential !== '') {
       await writeFile(pkUrl, decryptPK.replace(/\\n/g, '\n'));
       await fileChmod(pkUrl, '600');
-      vCredential = '\nansible_ssh_private_key_file: ' + pkUrl +
-        '\nansible_user: ' + credential.mid.replace(/\\\\/g, '\\') +
-        '\nansible_ssh_password: \'' + key.decrypt(credential.mpw, 'utf8') + '\'\n';
-    } else {
-      vCredential = '';
     }
 
     //Job Insert
@@ -229,9 +212,7 @@ async function jobExecute(next, resultT, chk_template, varg) {
         args.push(varg);
         args.push('-l');
         args.push(vlimits);
-      } else {
-        args
-      }
+      } 
     }
 
     console.log('### COMMAND ARGS :  ', args);
@@ -259,7 +240,7 @@ async function jobExecute(next, resultT, chk_template, varg) {
       console.log(new Date() + 'ansible-playbook complete...' + code);
       updateJobevent(code, vjid);
       // DELETE Directory
-      rmDir(vdic);
+      await rmDir(vdic);
       return 'a004';
     });
   } catch (err) {
@@ -369,19 +350,6 @@ function fileChmod(path, chmode) {
     } catch (err) {
       console.log(err);
     }
-  });
-}
-
-function selectJid() {
-  return new Promise((resolve, reject) => {
-    db.query(sql.selectJidQuery(), [], (err, rows) => {
-      if (err) {
-        return reject(err);
-      }
-      console.log("total func: " + rows.rows[0].currval);
-      resolve(rows.rows[0].currval);
-
-    });
   });
 }
 
