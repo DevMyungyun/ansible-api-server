@@ -9,7 +9,7 @@ const addslashes = require('../db/addslashes.js');
 /* Post Ivt_hst multiple Inventory ID (Insert) */
 router.post('/', (req, res, next) => {
 	let iidHid = req.body.iidHid ? req.body.iidHid : "";
-	const values = iidHid.map(v => [v.iid, v.hid])
+	const values = iidHid.map(v => [ addslashes(v.iid), addslashes(v.hid)])
 
 	db.query(format(sql.post(), values), [], (err, rows) => {
 		if (err) return next(err);

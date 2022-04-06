@@ -27,18 +27,18 @@ router.post('/playbook', (req, res, next) => {
   const tid = req.body.tid ? addslashes(req.body.tid) : "";
 
   selectJobTemplate(tid).then((resultJT) => {
-    if (resultJT != null && resultJT.use_yn == 'Y') {
-
+    if (resultAHT) {
+      console.log('>>> Template ID does not exist in database');
+      return res.json(db.resultMsg('a501', req.body));
+    }
+    if (resultJT.use_yn == 'Y') {
       const returnCode = jobExecute(next, resultJT, 'AP');
-      res.json(db.resultMsg(returnCode, tid));
+      return res.json(db.resultMsg(returnCode, tid));
 
     } else if (resultJT.use_yn == 'N') {
-      console.log('### This Playbook Template does not allow to use');
-      res.json(db.resultMsg('a502', req.body));
-    } else {
-      console.log('Job Template ID does not exist in database');
-      res.json(db.resultMsg('a501', req.body));
-    }
+      console.log('>>> This Playbook Template does not allow to use');
+      return res.json(db.resultMsg('a502', req.body));
+    } 
   }).catch((err) => {
     if (err) {
       console.log(err);
@@ -52,20 +52,21 @@ router.post('/adhoc', (req, res, next) => {
 
   // ADHOC excute
   selectAHTemplate(tid).then((resultAHT) => {
-    if (resultAHT != null && resultAHT.use_yn == 'Y') {
+    if (resultAHT) {
+      console.log('Template ID does not exist in database');
+      return res.json(db.resultMsg('a501', req.body));
+    }
+    if (resultAHT.use_yn == 'Y') {
       let varg = resultAHT.argument;
 
       const returnCode = jobExecute(next, resultAHT, 'AH', varg);
-      res.json(db.resultMsg(returnCode, {
+      return res.json(db.resultMsg(returnCode, {
         'tid': tid
       }));
 
     } else if (resultAHT.use_yn == 'N') {
       console.log('### This Ad-Hoc Template does not allow to use');
-      res.json(db.resultMsg('a502', req.body));
-    } else {
-      console.log('Template ID does not exist in database');
-      res.json(db.resultMsg('a501', req.body));
+      return res.json(db.resultMsg('a502', req.body));
     }
   }).catch((err) => {
     if (err) {
@@ -75,12 +76,12 @@ router.post('/adhoc', (req, res, next) => {
 });
 /* PUT Job Event (Update) */
 router.put('/:seq', (req, res, next) => {
-  res.json(db.resultMsg('900', req.body));
+  return res.json(db.resultMsg('a900', req.body));
 });
 
 /* DELETE Job Event (delete) */
 router.delete('/:seq', (req, res, next) => {
-  res.json(db.resultMsg('900', req.body));
+  return res.json(db.resultMsg('a900', req.body));
 });
 
 /* GET Job Event (SELECT ONE) */
@@ -91,7 +92,7 @@ router.get('/:seq', (req, res, next) => {
     if (err) {
       return next(err);
     }
-    res.json(db.resultMsg('a001', rows.rows));
+    return res.json(db.resultMsg('a001', rows.rows));
   });
 });
 
@@ -121,7 +122,7 @@ router.get('/', (req, res, next) => {
       data['pageSize'] = pageSize
       data['list'] = rows.rows;
 
-      res.json(db.resultMsg('a001', data));
+      return res.json(db.resultMsg('a001', data));
     }).catch((err) => {
       if (err) {
         console.error(err);
@@ -169,22 +170,24 @@ async function jobExecute(next, resultT, chk_template, varg) {
     else if (vverb === 3) vverb = '-vvvv';
     else if (vverb === 4) vverb = '-vvvvv';
     else vverb = '-v'
-    
+
+    let vCredential = credential.mid ? `\nansible_user: ${credential.mid.replace(/\\\\/g, '\\')}` : ``;
+    vCredential += credential.mpw ? `\nansible_password: \'${key.decrypt(credential.mpw, 'utf8')}\'` : ``;
+    vCredential += credential.private_key ? `\nansible_ssh_private_key_file: ${pkUrl}` : ``;
+
     // Directory Create
     await mkDir(vdic);
     // Create hosts file
     await writeFile(inventoryUrl, targetHosts);
-    // Create Env file
-    await writeFile(envUrl, resultT.variables.replace(/\\n/g, '\n') + vCredential);
-    
-    let vCredential = credential.mid ? `\nansible_user: ${credential.mid.replace(/\\\\/g, '\\')}` : ``;
-    vCredential += credential.mpw ? `\nansible_password: \'${key.decrypt(credential.mpw, 'utf8')}\'\n` : ``;
-    vCredential += credential.private_key ? `\nansible_ssh_private_key_file: ${pkUrl}` : ``;
 
-    if(vCredential !== '') {
-      await writeFile(pkUrl, decryptPK.replace(/\\n/g, '\n'));
+    // Check Credential
+    if (vCredential !== '') {
+      await writeFile(pkUrl, key.decrypt(credential.private_key, 'utf8').replace(/\\n/g, '\n'));
       await fileChmod(pkUrl, '600');
     }
+
+    // Create Env file
+    await writeFile(envUrl, resultT.variables.replace(/\\n/g, '\n') + vCredential);
 
     //Job Insert
     const jobResult = await insertJob(resultT);
@@ -212,7 +215,7 @@ async function jobExecute(next, resultT, chk_template, varg) {
         args.push(varg);
         args.push('-l');
         args.push(vlimits);
-      } 
+      }
     }
 
     console.log('### COMMAND ARGS :  ', args);
@@ -239,7 +242,7 @@ async function jobExecute(next, resultT, chk_template, varg) {
 
     ansible.on('close', (code) => {
       console.log(new Date() + 'ansible-playbook complete...' + code);
-      updateJobevent(code, vjid);
+      (code, vjid);
       // DELETE Directory
       rmDir(vdic);
       return 'a004';
@@ -279,7 +282,7 @@ function selectCred(cname) {
         return reject(err);
       }
 
-      resolve(rows.rows[0]);
+      return resolve(rows.rows[0]);
     });
   });
 }
@@ -304,7 +307,7 @@ function selectHosts(iid) {
           imsi += rows.rows[i].ip + "\n";
         }
       }
-      resolve(imsi);
+      return resolve(imsi);
     });
   });
 }
@@ -317,6 +320,7 @@ function mkDir(dic) {
         reject(err);
       }
       console.log('### successfully create directory');
+      return resolve();
     });
   });
 }
@@ -327,7 +331,8 @@ function rmDir(dic) {
       if (err) {
         return reject(err);
       }
-      console.error('### successfully delete directory');
+      console.log('>>> successfully delete directory');
+      return resolve();
     });
   });
 }
@@ -336,7 +341,8 @@ function writeFile(filename, data) {
   return new Promise((resolve, reject) => {
     try {
       fs.writeFileSync(filename, data, 'utf8');
-      console.log('### successfully write into the file');
+      console.log('>>> successfully write into the file');
+      return resolve();
     } catch (err) {
       reject(err)
     }
@@ -347,7 +353,8 @@ function fileChmod(path, chmode) {
   return new Promise((resolve, reject) => {
     try {
       fs.chmodSync(path, chmode);
-      console.log('### successfully change the file mode');
+      console.log('>>> successfully change the file mode');
+      return resolve();
     } catch (err) {
       console.log(err);
     }
@@ -399,6 +406,7 @@ function updateJobevent(vcode, vjid) {
         return reject(err);
       }
       console.log(">>> successfully job event update");
+      return resolve();
     })
   })
 }
