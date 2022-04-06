@@ -21,7 +21,7 @@ let vjdata = {};
 
 /* POST Adhoc Job Event (Insert) */
 router.post('/playbook', (req, res, next) => {
-  const vtid = req.body.tid ? addslashes(req.body.tid) : "";
+  const tid = req.body.tid ? addslashes(req.body.tid) : "";
 
   selectJobTemplate(vtid).then((resultJT) => {
     if (resultJT != null && resultJT.use_yn == 'Y') {
