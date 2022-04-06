@@ -2,7 +2,9 @@
 	"a001": "success",
 	"a002": "process kill success",
 	"a003": "there is no data",
+	"a004": "job execute done...",
 	"a501": "Template ID does not exist in database",
 	"a502": "Template does not allow to use",
+	"a504": "error occur while job execute!",
 	"a900": "not supported"
 }

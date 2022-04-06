@@ -29,8 +29,8 @@ router.post('/playbook', (req, res, next) => {
   selectJobTemplate(vtid).then((resultJT) => {
     if (resultJT != null && resultJT.use_yn == 'Y') {
       
-      jobExecute(next, resultJT, 'AP');
-     
+      const returnCode = jobExecute(next, resultJT, 'AP');
+      res.json(db.resultMsg(returnCode, tid));
     } else if (resultJT.use_yn == 'N') {
       console.log('### This Playbook Template does not allow to use');
       res.json(db.resultMsg('a502', req.body));
@@ -47,14 +47,15 @@ router.post('/playbook', (req, res, next) => {
 });
 
 router.post('/adhoc', (req, res, next) => {
-  const vtid = req.body.tid ? addslashes(req.body.tid) : "";
+  const tid = req.body.tid ? addslashes(req.body.tid) : "";
 
   // ADHOC excute
-  selectAHTemplate(vtid).then((resultAHT) => {
+  selectAHTemplate(tid).then((resultAHT) => {
     if (resultAHT != null && resultAHT.use_yn == 'Y') {
       let varg = resultAHT.argument;
 
-      jobExecute(next, resultAHT, 'AH', varg);
+      const returnCode = jobExecute(next, resultAHT, 'AH', varg);
+      res.json(db.resultMsg(returnCode, tid));
 
     } else if (resultAHT.use_yn == 'N') {
       console.log('### This Ad-Hoc Template does not allow to use');
@@ -242,6 +243,7 @@ async function jobExecute(next, resultT, chk_template, varg) {
 
     ansible.stderr.on('data', (data) => {
       console.log(new Date() + 'ipconfig error...');
+      return 'a504';
     });
 
     ansible.on('close', (code) => {
@@ -249,7 +251,7 @@ async function jobExecute(next, resultT, chk_template, varg) {
       updateJobevent(code, vjid);
       // DELETE Directory
       rmDir(vdic);
-      res.json(db.resultMsg('a001', vjdata));
+      return 'a004';
     });
   } catch (err) {
     next(err)
