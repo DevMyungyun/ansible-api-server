@@ -23,14 +23,14 @@ router.post('/', (req, res, next) => {
 
 /* PUT Inventory (Update) */
 router.put('/:seq', (req, res, next) => {
-	let seq = req.params.seq ? addslashes(req.params.seq) : "";
-
+	const seq = req.params.seq ? addslashes(req.params.seq) : "";
+	
 	const dto = new inventoryBuilder().setName(addslashes(req.body.name))
 								.setContent(addslashes(req.body.content))
 								.setUse_yn(req.body.use_yn ? addslashes(req.body.use_yn) : "Y")
 								.build();
 
-	db.query(sql.update, [dto.name, dto.content, dto.use_yn, seq], (err, rows) => {
+	db.query(sql.update(), [dto.name, dto.content, dto.use_yn, seq], (err) => {
 		if (err) return next(err);
 		
 		res.json(db.resultMsg('a001', req.body));
@@ -38,10 +38,10 @@ router.put('/:seq', (req, res, next) => {
 });
 
 /* DELETE Inventory (delete) */
-router.delete('/', (req, res, next) => {
-	let seq = req.query.seq ? addslashes(req.query.seq) : "";
+router.delete('/:seq', (req, res, next) => {
+	let seq = req.params.seq ? addslashes(req.params.seq) : "";
 
-	db.query(sql.delete, [seq], (err) => {
+	db.query(sql.delete(), [seq], (err) => {
 		if (err) return next(err);
 		
 		res.json(db.resultMsg('a001', seq));
@@ -109,7 +109,7 @@ router.get('/', (req, res, next) => {
 	const name = req.query.name ? addslashes(req.query.name) : "";
 
 	// for open search-inventory.html value
-	let vsearchInv = req.query.searchInv ? addslashes(req.query.searchInv) : "";
+	const vsearchInv = req.query.searchInv ? addslashes(req.query.searchInv) : "";
 
 	if (page == "" || page < 1) {
 		page = 1;
@@ -117,9 +117,9 @@ router.get('/', (req, res, next) => {
 	if (pageSize == "" || pageSize < 1) {
 		pageSize = 15;
 	}
-	let start = (page - 1) * pageSize;
+	const start = (page - 1) * pageSize;
 
-	db.query(sql.getList(name), [pageSize, page], (err, rows) => {
+	db.query(sql.getList(name), [pageSize, start], (err, rows) => {
 		if (err) return next(err);
 
 		totalCount(req).then((result) => {

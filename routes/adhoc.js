@@ -7,7 +7,7 @@ const adhocBuilder = require('../dto/adhocBuilder')
 const sql = require('../db/sql/adhocSql.js')
 
 // Post adhoc template (Insert)
-router.post('/', function (req, res) {
+router.post('/', function (req, res, next) {
 	const body = req.body;
 	const dto = new adhocBuilder().setName(addslashes(body.name))
 								.setContent(addslashes(body.content))
@@ -28,17 +28,15 @@ router.post('/', function (req, res) {
 							, dto.arg, dto.forks, dto.limits
 							, dto.verb, dto.variables, dto.use_yn], 
 							(err) => {
-		if (err) {
-			next(err);
-		}
+		if (err) next(err);
 
 		return res.json(db.resultMsg('a001', req.body));
 	});
 });
 
 /* PUT adhoc template (Update) */
-router.put('/', function (req, res, next) {
-	const seq = req.query.seq ? addslashes(req.query.seq) : "";
+router.put('/:seq', function (req, res, next) {
+	const seq = req.params.seq ? addslashes(req.params.seq) : "";
 	const body = req.body;
 
 	const dto = new adhocBuilder().setName(addslashes(body.name))

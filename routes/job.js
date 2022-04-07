@@ -8,12 +8,6 @@ const addslashes = require('../db/addslashes.js');
 
 /* POST Job (Insert) */
 router.post('/', (req, res, next) => {
-	// let viid = req.body.iid ? addslashes(req.body.iid) : "";
-	// let viname = req.body.iname ? addslashes(req.body.iname) : "";
-	// let vtid = req.body.tid ? addslashes(req.body.tid) : "";
-	// let vtname = req.body.tname ? addslashes(req.body.tname) : "";
-	// let vstatus = req.body.status ? addslashes(req.body.status) : "";
-
 	const dto = new jobBuilder().setIid(addslashes(req.body.iid))
 								.setIname(addslashes(req.body.iname))
 								.setTid(addslashes(req.body.tid))

@@ -21,7 +21,7 @@ class sql {
   delete () {
     let stringQuery = "";
     stringQuery += " DELETE FROM t_inventory ";
-    stringQuery += " WHERE iid IN ( $1::int[] ) ";
+    stringQuery += " WHERE iid IN ( $1 ) ";
     return stringQuery
   }
   
@@ -44,8 +44,7 @@ class sql {
       stringQuery += " WHERE use_yn = \'Y\' ";
     }
     stringQuery += " ORDER BY iid DESC ";
-    // stringQuery += " LIMIT " + vpageSize + " OFFSET " + vstart;
-  
+    stringQuery += " LIMIT $1 OFFSET $2";
     return stringQuery
   }
   

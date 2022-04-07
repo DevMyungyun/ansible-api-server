@@ -32,7 +32,7 @@ router.post('/', (req, res, next) => {
 
 /* PUT Hosts (Update) */
 router.put('/:seq', (req, res, next) => {
-	let seq = req.params.seq ? addslashes(req.params.seq) : "";
+	const seq = req.params.seq ? addslashes(req.params.seq) : "";
 	
 	const dto = new hostBuilder().setName(addslashes(req.body.name))
 								.setContent(addslashes(req.body.content))
@@ -68,8 +68,8 @@ router.delete('/:seq', (req, res, next) => {
 
 /* GET Hosts (SELECT ONE) */
 router.get('/:seq', (req, res, next) => {
-	let seq = req.params.seq ? addslashes(req.params.seq) : "";
-
+	const seq = req.params.seq ? addslashes(req.params.seq) : "";
+	
 	db.query(hostSql.getOneRow(), [seq], (err, rows) => {
 		if (err) return next(err);
 

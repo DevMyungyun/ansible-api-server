@@ -39,12 +39,12 @@ router.post('/', (req, res, next) => {
 });
 
 /* PUT credential (Update) */
-router.put('/', (req, res, next) => {
+router.put('/:name', (req, res, next) => {
 	let encryptedPw = '';
 	let encryptePK = '';
 
 	const body = req.body;
-	const dto = new credBuilder().setName(req.query.name)
+	const dto = new credBuilder().setName(req.params.name)
 								.setContent(body.content)
 								.setMid(body.mid)
 								.setMpw(body.mpw)
@@ -56,17 +56,15 @@ router.put('/', (req, res, next) => {
 	if(dto.private_key)	encryptePK = key.encrypt(dto.private_key, encodeType);
 
 	db.query(sql.update(encryptedPw, encryptePK), [dto.content, dto.mid
-							, dto.type, dto.name], (err, rows) => {
-		if (err) {
-			return next(err);
-		}
+							, dto.type, dto.name], (err) => {
+		if (err) return next(err);
 		res.json(db.resultMsg('a001', req.body));
 	});
 });
 
 /* DELETE credential (delete) */
 router.delete('/:name', (req, res, next) => {
-	let name = req.params.name ? addslashes(req.params.name) :
+	let name = req.params.name ? addslashes(req.params.name) : '';
 
 	db.query(sql.delete(), [name], (err, rows) => {
 		if (err) {
@@ -78,9 +76,9 @@ router.delete('/:name', (req, res, next) => {
 });
 
 /* GET Credential (SELECT ONE) */
-router.get('/:seq', (req, res, next) => {
+router.get('/:name', (req, res, next) => {
 	let code = 'a001';
-	let name = req.params.name ? addslashes(req.params.name) :
+	const name = req.params.name ? addslashes(req.params.name) : '';
 
 	db.query(sql.getOneRow(), [name], (err, rows) => {
 		if (err) return next(err);
@@ -93,11 +91,10 @@ router.get('/:seq', (req, res, next) => {
 
 /* GET Credential listing. */
 router.get('/', (req, res, next) => {
-	let code = 'a001';
 	let data = {};
-	let page = req.query.page ? addslashes(req.query.page) : "";
-	let pageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
-	let name = req.query.name ? addslashes(req.query.name) : "";
+	const page = req.query.page ? addslashes(req.query.page) : "";
+	const pageSize = req.query.pageSize ? addslashes(req.query.pageSize) : "";
+	const name = req.query.name ? addslashes(req.query.name) : "";
 
 	if (page == "" || page < 1) {
 		page = 1;
@@ -105,11 +102,10 @@ router.get('/', (req, res, next) => {
 	if (pageSize == "" || pageSize < 1) {
 		pageSize = 15;
 	}
-	let start = (page - 1) * pageS
+	const start = (page - 1) * pageSize
 
 	db.query(sql.getList(name), [pageSize, start], (err, rows) => {
 		if (err) return next(err);
-		if (rows.rowCount === 0 ) code = 'a003'
 
 		totalCount(req).then((result) => {
 			data['rowCount'] = rows.rowCount;
@@ -118,7 +114,7 @@ router.get('/', (req, res, next) => {
 			data['pageSize'] = pageSize;
 			data['list'] = rows.rows;
 
-			res.json(db.resultMsg(code, data));
+			res.json(db.resultMsg('a001', data));
 		}).catch((err) => {
 			if (err) {
 				console.error(err);

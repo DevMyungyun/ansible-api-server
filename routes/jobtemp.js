@@ -21,12 +21,13 @@ router.post('/', (req, res, next) => {
 	// let vvariables = req.body.variables ? addslashes(req.body.variables) : "---";
 	// let vuse_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "Y";
 
+	const body = req.body;
 	const dto = new jobTempBuilder().setName(addslashes(body.name))
 									.setContent(addslashes(body.content))
 									.setIid(addslashes(body.iid))
 									.setIname(addslashes(body.iname))
 									.setCname(addslashes(body.cname))
-									.setModule( addslashes(body.module))
+									.setPlaybook(addslashes(body.playbook))
 									.setVerb(addslashes(body.verb))
 									.setForks(body.forks ? addslashes(body.forks) : 1)
 									.setLimits(body.limits ? addslashes(body.limits) : "")
@@ -35,7 +36,7 @@ router.post('/', (req, res, next) => {
 									.build();
 
 	db.query(sql.post(), [dto.name, dto.content, dto.iid
-						, dto.iname, dto.cname, dto.module
+						, dto.iname, dto.cname, dto.playbook
 						, dto.forks, dto.limits	, dto.verb
 						, dto.variables, dto.use_yn], (err, rows) => {
 		if (err) return next(err);
@@ -58,13 +59,13 @@ router.put('/:seq', (req, res, next) => {
 	// let vvariables = req.body.variables ? addslashes(req.body.variables) : "---";
 	// let vuse_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "Y";
 
-	
+	const body = req.body
 	const dto = new jobTempBuilder().setName(addslashes(body.name))
 									.setContent(addslashes(body.content))
 									.setIid(addslashes(body.iid))
 									.setIname(addslashes(body.iname))
 									.setCname(addslashes(body.cname))
-									.setModule( addslashes(body.module))
+									.setPlaybook( addslashes(body.playbook))
 									.setVerb(addslashes(body.verb))
 									.setForks(body.forks ? addslashes(body.forks) : 1)
 									.setLimits(body.limits ? addslashes(body.limits) : "")
@@ -73,7 +74,7 @@ router.put('/:seq', (req, res, next) => {
 									.build();
 
 	db.query(sql.update, [dto.name, dto.content, dto.iid
-		, dto.iname, dto.cname, dto.module
+		, dto.iname, dto.cname, dto.playbook
 		, dto.forks, dto.limits	, dto.verb
 		, dto.variables, dto.use_yn, seq], (err, rows) => {
 		if (err) {
@@ -97,7 +98,7 @@ router.delete('/:seq', (req, res, next) => {
 router.get('/:seq', (req, res, next) => {
 	let seq = req.params.seq ? addslashes(req.params.seq) : "";
 
-	db.query(sql.getOneRow, [seq], (err, rows) => {
+	db.query(sql.getOneRow(), [seq], (err, rows) => {
 		if (err) {
 			return next(err);
 		}

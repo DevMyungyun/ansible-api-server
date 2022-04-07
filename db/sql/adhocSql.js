@@ -48,6 +48,7 @@
     if (name.length > 2) {
       stringQuery += " WHERE name like \'%" + name + "%\' ";
     }
+    stringQuery += " ORDER BY tid DESC ";
     stringQuery += " LIMIT $1 OFFSET $2";
     return stringQuery
   
