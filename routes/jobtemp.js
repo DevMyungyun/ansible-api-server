@@ -9,18 +9,6 @@ const addslashes = require('../db/addslashes.js');
 
 // Post Jobtemp (Insert)
 router.post('/', (req, res, next) => {
-	// let vname = req.body.name ? addslashes(req.body.name) : "";
-	// let vcontent = req.body.content ? addslashes(req.body.content) : "";
-	// let viid = req.body.iid ? addslashes(req.body.iid) : "";
-	// let viname = req.body.iname ? addslashes(req.body.iname) : "";
-	// let vcname = req.body.cname ? addslashes(req.body.cname) : "";
-	// let vplaybook = req.body.playbook ? addslashes(req.body.playbook) : "";
-	// let vforks = req.body.forks ? addslashes(req.body.forks) : "";
-	// let vlimits = req.body.limits ? addslashes(req.body.limits) : "";
-	// let vverb = req.body.verb ? addslashes(req.body.verb) : "";
-	// let vvariables = req.body.variables ? addslashes(req.body.variables) : "---";
-	// let vuse_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "Y";
-
 	const body = req.body;
 	const dto = new jobTempBuilder().setName(addslashes(body.name))
 									.setContent(addslashes(body.content))
@@ -47,18 +35,6 @@ router.post('/', (req, res, next) => {
 /* PUT Jobtemp (Update) */
 router.put('/:seq', (req, res, next) => {
 	let seq = req.params.seq ? addslashes(req.params.seq) : "";
-	// let vname = req.body.name ? addslashes(req.body.name) : "";
-	// let vcontent = req.body.content ? addslashes(req.body.content) : "";
-	// let viid = req.body.iid ? addslashes(req.body.iid) : "";
-	// let viname = req.body.iname ? addslashes(req.body.iname) : "";
-	// let vcname = req.body.cname ? addslashes(req.body.cname) : "";
-	// let vplaybook = req.body.playbook ? addslashes(req.body.playbook) : "";
-	// let vforks = req.body.forks ? addslashes(req.body.forks) : "";
-	// let vlimits = req.body.limits ? addslashes(req.body.limits) : "";
-	// let vverb = req.body.verb ? addslashes(req.body.verb) : "";
-	// let vvariables = req.body.variables ? addslashes(req.body.variables) : "---";
-	// let vuse_yn = req.body.use_yn ? addslashes(req.body.use_yn) : "Y";
-
 	const body = req.body
 	const dto = new jobTempBuilder().setName(addslashes(body.name))
 									.setContent(addslashes(body.content))
