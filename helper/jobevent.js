@@ -18,7 +18,11 @@ const key = new rsa(conf.rsa);
 const vran = 'f' + (Math.random() * (1 << 30)).toString(16).replace('.', '');
 const vdic = conf.fileStorage + vran;
 
+let vjid = '';
+let vjdata = {};
+    
 class jobeventHelper {
+    
     async jobExecute(next, resultT, chk_template, varg) {
         resultT['chk_temp'] = chk_template;
         const inventoryUrl = vdic + "/hosts";
@@ -109,19 +113,16 @@ class jobeventHelper {
 
             ansible.stderr.on('data', (data) => {
                 console.log(new Date() + ' : ipconfig error...');
-                rmDir(vdic);
-                return 'a504';
             });
 
             ansible.on('close', (code) => {
                 console.log(new Date() + ' : ansible-playbook complete...' + code);
                 (code, vjid);
                 // DELETE Directory
-                rmDir(vdic);
-                return 'a001';
+                this.rmDir(vdic);
             });
         } catch (err) {
-            next(err)
+            next(err);
         }
     }
 
@@ -241,7 +242,7 @@ class jobeventHelper {
                     return reject(err);
                 }
 
-                getJid().then((result) => {
+                this.getJid().then((result) => {
                     resolve(result);
                 });
             });
