@@ -4,7 +4,7 @@ node {
     def dockerImage
     def dockerImageName='devmyungyun/automation-server'
     def dockerCredentialId='dockerhub-devmyungyun'
-    def dockerFilePath='/Dockerfile'
+    def dockerFilePath='./Dockerfile'
 
     def confirmBuild=true
 
@@ -69,7 +69,7 @@ node {
                     stage('Build: Process') {
                         container('docker') {
                             if (confirmBuild) {
-                                echo 'build start'
+                                echo '>>>>> build start'
 
                                 stage('Docker: Build image') {
                                     /* This builds the actual image; synonymous to
