@@ -1,6 +1,6 @@
-# Automation by ITMSG
+# Ansible RESTful API Server
 
-This is API web server with Ansible.
+This is RESTful API web server with Ansible.
 
 ## Getting Started
 
