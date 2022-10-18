@@ -1,6 +1,6 @@
-# Automation by ITMSG
+# Ansible RESTful API Server
 
-This is API web server with Ansible.
+This is RESTful API web server with Ansible. You can execute Ansible ADHOC, Playbook using this API server. If you want to give me a feedback, Please leave a comment on 'Discussions'!
 
 ## Getting Started
 
