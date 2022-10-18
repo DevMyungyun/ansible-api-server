@@ -30,6 +30,9 @@ start itmsg_automation web server
 ```
 $ node {NPM_GLOBAL_INTALL_PATH}/bin/automation.js
 ```
+
+NPM URL : https://www.npmjs.com/package/itmsg_automation
+
 ### Configuration
 
 Open config.json file and edit PostgreSQL connection informations and Ansible's file path for playbooks.
