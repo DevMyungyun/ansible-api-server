@@ -6,6 +6,7 @@ node {
     def dockerCredentialId='dockerhub-devmyungyun'
     def dockerFilePath='/Dockerfile'
 
+
     def confirmBuild=true
 
     stage('build & push') {
