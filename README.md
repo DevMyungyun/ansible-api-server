@@ -1,6 +1,6 @@
 # Automation by ITMSG
 
-This is API web server with Ansible.
+This is RESTful API web server with Ansible. You can execute Ansible ADHOC, Playbook using this API server. If you want to give me a feedback, Please leave a comment on 'Github Repository > Discussions'!
 
 ## Getting Started
 
@@ -27,14 +27,12 @@ $ npm i itmsg_automation -g
 ```
 
 start itmsg_automation web server
-
-NPM URL : https://www.npmjs.com/package/itmsg_automation
-
-
+```
+$ node {NPM_GLOBAL_INTALL_PATH}/bin/automation.js
+```
 ### Configuration
 
-Open config.json file and edit PostgreSQL connection informations and Ansible's
-file path for playbooks.
+Open config.json file and edit PostgreSQL connection informations and Ansible's file path for playbooks.
 
 ### Automation Portal
 
