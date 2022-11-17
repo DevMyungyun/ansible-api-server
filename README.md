@@ -2,6 +2,8 @@
 
 This is RESTful API web server with Ansible. You can execute Ansible ADHOC, Playbook using this API server. If you want to give me a feedback, Please leave a comment on 'Discussions'!
 
+*** It is very helpful and motivates me as giving me stars in my Github Repository! ***
+
 ## Getting Started
 
 This web server for control Ansible with PostgreSQL database.
